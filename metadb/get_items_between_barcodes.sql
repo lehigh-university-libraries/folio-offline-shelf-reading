@@ -1,0 +1,45 @@
+metadb:function get_items_between_barcodes
+
+DROP FUNCTION IF EXISTS get_items_between_barcodes;
+
+CREATE FUNCTION get_items_between_barcodes(
+    start_barcode TEXT,
+    end_barcode TEXT
+)
+RETURNS TABLE (
+    barcode TEXT,
+    effective_shelving_order TEXT,
+    item_call_number TEXT,
+    holdings_call_number TEXT,
+    title TEXT
+)
+AS
+$$
+WITH bookends AS (
+	SELECT 
+        *, 
+        row_number() OVER (ORDER BY effective_shelving_order) AS row_num 
+    FROM folio_inventory.item__t
+	WHERE barcode IN (start_barcode, end_barcode)
+)
+SELECT item.barcode, 
+	item.effective_shelving_order, 
+	item.item_level_call_number AS item_call_number, 
+	holdings.call_number AS holdings_call_number, 
+	inst.title 
+FROM folio_inventory.item__t item
+LEFT JOIN folio_inventory.holdings_record__t holdings 
+    ON item.holdings_record_id = holdings.id
+LEFT JOIN folio_inventory.instance__t inst 
+    ON holdings.instance_id = inst.id
+WHERE item.effective_location_id IN 
+    (SELECT effective_location_id FROM bookends WHERE row_num = 1)
+AND item.effective_location_id IN 
+    (SELECT effective_location_id FROM bookends WHERE row_num = 2)
+AND item.effective_shelving_order >= 
+    (SELECT effective_shelving_order FROM bookends WHERE row_num = 1)
+AND item.effective_shelving_order <= 
+    (SELECT effective_shelving_order FROM bookends WHERE row_num = 2)
+ORDER BY item.effective_shelving_order
+$$
+LANGUAGE SQL;
