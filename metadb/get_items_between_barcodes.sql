@@ -1,4 +1,4 @@
-metadb:function get_items_between_barcodes
+--metadb:function get_items_between_barcodes
 
 DROP FUNCTION IF EXISTS get_items_between_barcodes;
 
