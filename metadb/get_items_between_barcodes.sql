@@ -11,6 +11,7 @@ RETURNS TABLE (
     effective_shelving_order TEXT,
     item_call_number TEXT,
     holdings_call_number TEXT,
+    item_status TEXT,
     title TEXT
 )
 AS
@@ -22,12 +23,16 @@ WITH bookends AS (
     FROM folio_inventory.item__t
 	WHERE barcode IN (start_barcode, end_barcode)
 )
-SELECT item.barcode, 
+SELECT 
+	item.barcode, 
 	item.effective_shelving_order, 
 	item.item_level_call_number AS item_call_number, 
 	holdings.call_number AS holdings_call_number, 
+	jsonb_extract_path_text(item_raw.jsonb, 'status', 'name'),
 	inst.title 
 FROM folio_inventory.item__t item
+LEFT JOIN folio_inventory.item item_raw
+	ON item.id = item_raw.id
 LEFT JOIN folio_inventory.holdings_record__t holdings 
     ON item.holdings_record_id = holdings.id
 LEFT JOIN folio_inventory.instance__t inst 
