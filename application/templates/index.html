@@ -1,0 +1,33 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="static/app.css"></style>
+  </head>
+  <body>
+    <h1>FOLIO Offline Shelf Reading</h1>
+    <section>
+      <h2>Scan first and last barcodes of section to shelf-read.</h2>
+      <form id="load-items" onsubmit="event.preventDefault(); loadItems();">
+        <div class="start_barcode">
+          <label for="start_barcode">Start Barcode:</label>
+          <input type="text" id="start_barcode" name="start_barcode">
+        </div>
+        <div class="end_barcode">
+          <label for="end_barcode">End Barcode:</label>
+          <input type="text" id="end_barcode" name="end_barcode">
+        </div>     
+        <input value="Submit" type="submit"></button>   
+      </form>
+    </section>
+    <hr/>
+    <section>
+      <h2>Items</h2>
+      <table id="items_table">
+        <thead>
+        </thead>
+        <tbody>
+        </tbody>  
+      </table>
+    </section>
+    <script src="/static/app.js"></script>
+  </body>
+</html>
