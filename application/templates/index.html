@@ -1,6 +1,9 @@
 <html>
   <head>
     <link rel="stylesheet" href="static/app.css"></style>
+    {% if test %}
+      <link rel="stylesheet" href="static/test.css"></style>
+    {% endif %}
   </head>
   <body>
     <h1>FOLIO Offline Shelf Reading</h1>
@@ -17,8 +20,19 @@
         </div>     
         <input value="Submit" type="submit"></button>   
       </form>
+      <hr/>
     </section>
-    <hr/>
+    <section>
+      <h2>Scan the next barcode</h2>
+      <form id="scan-next-barcode" onsubmit="event.preventDefault(); scanNextBarcode();">
+        <div class="next_barcode">
+          <label for="next_barcode"></label>
+          <input type="text" id="next_barcode" name="next_barcode">
+        </div>
+        <input type="submit" hidden />
+      </form>
+      <hr/>
+    </section>
     <section>
       <h2>Items</h2>
       <table id="items_table">
@@ -29,5 +43,8 @@
       </table>
     </section>
     <script src="/static/app.js"></script>
+    {% if test %}
+      <script src="/static/test.js"></script>
+    {% endif %}
   </body>
 </html>

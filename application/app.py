@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 @app.route("/", methods=['GET'])
 def home():
-  return render_template('index.html')
+  return render_template('index.html', test = eval(config['Testing']['enabled']))
 
 @app.route("/load-items", methods=['GET'])
 def load_items():

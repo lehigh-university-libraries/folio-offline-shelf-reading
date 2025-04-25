@@ -9,3 +9,7 @@ password=some_password
 [MetaDB]
 
 items_query_url=https://raw.githubusercontent.com/lehigh-university-libraries/folio-offline-shelf-reading/refs/heads/main/metadb/get_items_between_barcodes.sql
+
+[Testing]
+
+enabled = False
