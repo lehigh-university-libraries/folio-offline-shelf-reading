@@ -42,8 +42,9 @@ function printItemsTable(items) {
         <td class="shelf_status"><input type="text" disabled></td>
         <td><input type="text"></td>
       </tr>
-      `);
-    }
+    `);
+  }
+  document.getElementById("next_barcode").focus();
 }
 
 function printItemsTableHeader() {
@@ -84,6 +85,8 @@ function scanNextBarcode() {
     const shelfStatusInput = getInputAtRow(scannedRow);
     shelfStatusInput.value = SHELF_STATUS_PRESENT;
   }
+  document.getElementById("next_barcode").value = null;
+  document.getElementById("next_barcode").focus();
 }
 
 function getInputAtRow(row) {
