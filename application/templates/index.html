@@ -52,6 +52,9 @@
     </section>
     <script src="/static/app.js"></script>
     {% if test %}
+      <script>
+        const testData = JSON.parse('{{ test | tojson }}');
+      </script>
       <script src="/static/test.js"></script>
     {% endif %}
   </body>

@@ -16,3 +16,6 @@ items_query_url=https://raw.githubusercontent.com/lehigh-university-libraries/fo
 [Testing]
 
 enabled = False
+
+#start_barcode = 12345
+#end_barcode = 67890

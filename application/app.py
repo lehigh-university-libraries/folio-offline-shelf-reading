@@ -2,6 +2,7 @@ from configparser import ConfigParser
 from datetime import datetime
 from flask import Flask, g, render_template, request #pip install flask
 from folioclient import FolioClient #pip install folioclient
+import json
 import re
 
 config = None
@@ -69,7 +70,10 @@ app = create_app()
 
 @app.route('/', methods=['GET'])
 def home():
-  return render_template('index.html', test = eval(config['Testing']['enabled']))
+  return render_template(
+    'index.html', 
+    test = dict(config['Testing']) if eval(config['Testing']['enabled']) else False
+    )
 
 @app.route('/load-items', methods=['GET'])
 def load_items():
