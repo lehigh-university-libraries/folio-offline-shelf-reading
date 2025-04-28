@@ -2,6 +2,7 @@ from configparser import ConfigParser
 from datetime import datetime
 from flask import Flask, g, render_template, request #pip install flask
 from folioclient import FolioClient #pip install folioclient
+import re
 
 config = None
 inventoried_statistical_code = None
@@ -73,7 +74,12 @@ def home():
 @app.route('/load-items', methods=['GET'])
 def load_items():
   start_barcode = request.args.get('start_barcode')
+  if not validate_barcode(start_barcode):
+    return f'Invalid start barcode: {start_barcode}', 400
+
   end_barcode = request.args.get('end_barcode')
+  if not validate_barcode(end_barcode):
+    return f'Invalid end barcode: {end_barcode}', 400
 
   def load_items_internal(folio):
     result = folio.folio_post(
@@ -97,10 +103,15 @@ def save_items():
 
   def save_items_internal(folio):
     for item_input in items_input:
-      # TODO: Validate / secure all input
       barcode = item_input['barcode']
-      if not item_input['shelf_status']:
+      if not validate_barcode(barcode):
+        return f'Invalid barcode: {barcode}', 400
+
+      shelf_status = item_input['shelf_status']
+      if not shelf_status:
         continue
+      if not validate_shelf_status(shelf_status):
+        return f'Invalid shelf status: {shelf_status}', 400
 
       result = folio.folio_get(
         path = '/inventory/items',
@@ -114,7 +125,7 @@ def save_items():
       username = 'abc123' # TODO real username
       item['notes'].append({
         'itemNoteTypeId': inventoried_item_note_type,
-        'note': f"Inventoried at {timestamp} by {username}.  Shelf status: {item_input['shelf_status']}.",
+        'note': f"Inventoried at {timestamp} by {username}.  Shelf status: {shelf_status}.",
         'staffOnly': True,
       })
 
@@ -126,3 +137,9 @@ def save_items():
     return "Saved items"
   
   return run_with_folio_client(save_items_internal)
+
+def validate_barcode(barcode):
+  return re.match('^[0-9]*$', barcode)
+
+def validate_shelf_status(shelf_status):
+  return re.match('^[A-Za-z ]*$', shelf_status)

@@ -15,7 +15,7 @@ async function loadItems() {
     params.append("end_barcode", document.getElementById("end_barcode").value);
     const response = await fetch(`/load-items?${params}`);
     if (!response.ok) {
-      throw new Error(`Response: ${response}`);
+      throw new Error(`Response: ${response.status} ${await response.text()}`);
     }
 
     const items = await response.json();
@@ -24,7 +24,7 @@ async function loadItems() {
     printItemsTable(items);
     setExpectedRow(1);
   } catch (error) {
-    console.error(error.message);
+    beep(error.message);
   }
 }
 
@@ -93,11 +93,6 @@ function getInputAtRow(row) {
   return document.querySelector(`#items_table tbody tr:nth-child(${row}) td.shelf_status input`);
 }
 
-function beep(text) {
-  BEEP.play();
-  alert(text);
-}
-
 function setExpectedRow(row) {
   expectedRow = row;
   document.querySelectorAll("#items_table tbody tr").forEach((tr) => {
@@ -123,10 +118,14 @@ async function saveToFolio() {
       },
     });
     if (!response.ok) {
-      throw new Error(`Response: ${response}`);
+      throw new Error(`Response: ${response.status} ${await response.text()}`);
     }
   } catch (error) {
-    console.error(error.message);
+    beep(error.message);
   }
-
 };
+
+function beep(text) {
+  BEEP.play();
+  alert(text);
+}
