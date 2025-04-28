@@ -7,40 +7,48 @@
   </head>
   <body>
     <h1>FOLIO Offline Shelf Reading</h1>
-    <section>
-      <h2>Scan first and last barcodes of section to shelf-read.</h2>
-      <form id="load-items" onsubmit="event.preventDefault(); loadItems();">
-        <div class="start_barcode">
-          <label for="start_barcode">Start Barcode:</label>
-          <input type="text" id="start_barcode" name="start_barcode">
-        </div>
-        <div class="end_barcode">
-          <label for="end_barcode">End Barcode:</label>
-          <input type="text" id="end_barcode" name="end_barcode">
-        </div>     
-        <input value="Submit" type="submit"></button>   
-      </form>
-      <hr/>
-    </section>
-    <section>
-      <h2>Scan the next barcode</h2>
-      <form id="scan-next-barcode" onsubmit="event.preventDefault(); scanNextBarcode();">
-        <div class="next_barcode">
-          <label for="next_barcode"></label>
-          <input type="text" id="next_barcode" name="next_barcode">
-        </div>
-        <input type="submit" hidden />
-      </form>
-      <hr/>
-    </section>
+    <div class="control_sections">
+      <section>
+        <h2>Identify range to shelf-read.</h2>
+        <form id="load-items" onsubmit="event.preventDefault(); loadItems();">
+          <div class="start_barcode">
+            <label for="start_barcode">Start Barcode:</label>
+            <input type="text" id="start_barcode" name="start_barcode">
+          </div>
+          <div class="end_barcode">
+            <label for="end_barcode">End Barcode:</label>
+            <input type="text" id="end_barcode" name="end_barcode">
+          </div>     
+          <input value="Submit" type="submit"></button>   
+        </form>
+      </section>
+      <section>
+        <h2>Scan the next barcode</h2>
+        <form id="scan_next_barcode" onsubmit="event.preventDefault(); scanNextBarcode();">
+          <div class="next_barcode">
+            <label for="next_barcode"></label>
+            <input type="text" id="next_barcode" name="next_barcode">
+          </div>
+          <input type="submit" hidden />
+        </form>
+      </section>
+      <section>
+        <h2>After scanning all items</h2>
+        <p>Somewhere with good Wi-Fi...</p>
+        <button onclick="saveToFolio();">Save to FOLIO</button>
+      </section>
+    </div>
+    <hr/>
     <section>
       <h2>Items</h2>
-      <table id="items_table">
-        <thead>
-        </thead>
-        <tbody>
-        </tbody>  
-      </table>
+      <form id="items_form">
+        <table id="items_table">
+          <thead>
+          </thead>
+          <tbody>
+          </tbody>  
+        </table>
+      </form>
     </section>
     <script src="/static/app.js"></script>
     {% if test %}

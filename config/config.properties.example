@@ -6,6 +6,9 @@ tenant=diku
 username=folio_user
 password=some_password
 
+inventoried_statistical_code=INV-2025
+inventoried_item_note_type=Inventory
+
 [MetaDB]
 
 items_query_url=https://raw.githubusercontent.com/lehigh-university-libraries/folio-offline-shelf-reading/refs/heads/main/metadb/get_items_between_barcodes.sql

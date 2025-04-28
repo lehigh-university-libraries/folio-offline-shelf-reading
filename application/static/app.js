@@ -105,3 +105,28 @@ function setExpectedRow(row) {
   });
   document.querySelector(`#items_table tbody tr:nth-child(${row})`).classList.add("expected");
 }
+
+async function saveToFolio() {
+  const rows = document.querySelectorAll("#items_table tbody tr");
+  const payload = Array.from(rows).map((tr) => {
+    return {
+      barcode: tr.querySelector('.barcode').textContent,
+      shelf_status: tr.querySelector('.shelf_status input').value,
+    }
+  });
+  try {
+    const response = await fetch('/save-items', {
+      method: "POST",
+      body: JSON.stringify(payload),
+      headers: {
+        'Content-Type': 'application/json', 
+      },
+    });
+    if (!response.ok) {
+      throw new Error(`Response: ${response}`);
+    }
+  } catch (error) {
+    console.error(error.message);
+  }
+
+};

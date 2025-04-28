@@ -1,4 +1,18 @@
 
+h1 {
+    margin-bottom: 0;
+}
+
+.control_sections {
+    display: flex;
+    gap: 2rem;
+
+    section:not(:first-of-type) {
+        border-left: 1px solid black;
+        padding-left: 2rem;
+    }
+}
+
 #items_table {
     border: 1px solid black;
     border-spacing: 0;
