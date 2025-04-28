@@ -18,7 +18,7 @@ def create_app():
 
   return app
 
-def init_folio():
+def run_with_folio_client(fn):
   folio_config = config['FOLIO']
 
   with FolioClient(
@@ -27,10 +27,16 @@ def init_folio():
     folio_config['username'],
     folio_config['password']) as folio:
 
+    return fn(folio)
+
+def init_folio():
+
+  def init_folio_internal(folio):
     init_statistical_codes(folio)
     init_item_note_types(folio)
 
-    pass
+  run_with_folio_client(init_folio_internal)
+
 
 def init_statistical_codes(folio):
   result = folio.folio_get(
@@ -69,14 +75,7 @@ def load_items():
   start_barcode = request.args.get('start_barcode')
   end_barcode = request.args.get('end_barcode')
 
-  folio_config = config['FOLIO']
-
-  with FolioClient(
-    folio_config['base_url'], 
-    folio_config['tenant'],
-    folio_config['username'],
-    folio_config['password']) as folio:
-
+  def load_items_internal(folio):
     result = folio.folio_post(
       path = '/ldp/db/reports', 
       payload = {
@@ -89,21 +88,14 @@ def load_items():
       }
     )
     return result['records']
-
+  
+  return run_with_folio_client(load_items_internal)
+  
 @app.route('/save-items', methods=['POST'])
 def save_items():
-  pass
   items_input = request.json
 
-  # TODO refactor constructing FolioClient
-  # with app.app_context():
-  folio_config = config['FOLIO']
-  with FolioClient(
-    folio_config['base_url'], 
-    folio_config['tenant'],
-    folio_config['username'],
-    folio_config['password']) as folio:
-
+  def save_items_internal(folio):
     for item_input in items_input:
       # TODO: Validate / secure all input
       barcode = item_input['barcode']
@@ -131,4 +123,6 @@ def save_items():
         payload = item,
       )
 
-  return "Saved items"
+    return "Saved items"
+  
+  return run_with_folio_client(save_items_internal)
