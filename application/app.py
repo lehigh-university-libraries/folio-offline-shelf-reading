@@ -139,9 +139,9 @@ def save_items():
 
   def save_items_internal(folio):
     for item_input in items_input:
-      barcode = item_input['barcode']
-      if not validate_barcode(barcode):
-        return f'Invalid barcode: {barcode}', 400
+      item_id = item_input['id']
+      if not validate_item_id(item_id):
+        return f'Invalid item id: {item_id}', 400
 
       shelf_status = item_input['shelf_status']
       if not shelf_status:
@@ -153,12 +153,9 @@ def save_items():
       if shelf_condition and not validate_shelf_condition(shelf_condition):
         return f'Invalid shelf condition: {shelf_condition}', 400
 
-      result = folio.folio_get(
-        path = '/inventory/items',
-        key = 'items',
-        query = f"barcode={barcode}",
+      item = folio.folio_get(
+        path = f'/inventory/items/{item_id}'
       )
-      item = result[0]
 
       item['statisticalCodeIds'].append(inventoried_statistical_code)
       timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -196,6 +193,9 @@ def enrich_record(record):
 
 def validate_barcode(barcode):
   return re.match('^[0-9]*$', barcode)
+
+def validate_item_id(item_id):
+  return re.match('^[a-f0-9-]*$', item_id)
 
 def validate_shelf_status(shelf_status):
   return re.match('^[A-Za-z ]*$', shelf_status)

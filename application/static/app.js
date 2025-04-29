@@ -55,7 +55,10 @@ function printItemsTable(items) {
       alreadyInventoried = true;
     }
     document.querySelector("#items_table tbody").insertAdjacentHTML("beforeend", `
-      <tr ${alreadyInventoried ? 'class="already-inventoried"' : ''}>
+      <tr
+        data-item-id="${item.id}"
+        ${alreadyInventoried ? 'class="already-inventoried"' : ''}
+      >
         <td class="barcode">${item.barcode}</td>
         <td>${callNumber}</td>
         <td>${itemStatus}</td>
@@ -154,6 +157,7 @@ async function saveToFolio() {
   const rows = document.querySelectorAll("#items_table tbody tr");
   const payload = Array.from(rows).map((tr) => {
     return {
+      id: tr.dataset.itemId,
       barcode: tr.querySelector('.barcode').textContent,
       shelf_status: tr.querySelector('.shelf_status input').value,
       shelf_condition: tr.querySelector('.shelf_condition').textContent,
