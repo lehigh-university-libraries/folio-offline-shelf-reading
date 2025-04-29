@@ -141,68 +141,88 @@ def save_items():
   def save_items_internal(folio):
     results = []
     for item_input in items_input:
-      barcode = item_input['barcode']
-      if not validate_barcode(barcode):
-        return f'Invalid barcode: {barcode}', 400
+      validation_error = validate_item_input(item_input)
+      if (validation_error):
+        results.append(validation_error)
+        continue
 
       item_id = item_input['id']
-      if not validate_item_id(item_id):
-        return f'Invalid item id: {item_id}', 400
-
       shelf_status = item_input['shelf_status']
-      if not shelf_status:
-        continue
-      if not validate_shelf_status(shelf_status):
-        return f'Invalid shelf status: {shelf_status}', 400
-
       shelf_condition = item_input['shelf_condition'].strip() if 'shelf_condition' in item_input else None
-      if shelf_condition and not validate_shelf_condition(shelf_condition):
-        return f'Invalid shelf condition: {shelf_condition}', 400
-
-      item = folio.folio_get(
-        path = f'/inventory/items/{item_id}'
-      )
-
-      item['statisticalCodeIds'].append(inventoried_statistical_code)
-      timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-      username = 'abc123' # TODO real username
-      item['notes'].append({
-        'itemNoteTypeId': inventoried_item_note_type,
-        'note': f"Shelf status: {shelf_status}. Inventoried at {timestamp} by {username}.",
-        'staffOnly': True,
-      })
-      if shelf_condition:
-        item['notes'].append({
-          'itemNoteTypeId': inventoried_item_condition_note_type,
-          'note': f"{shelf_condition}. Inventoried at {timestamp} by {username}.",
-          'staffOnly': True,
-        })
-
-        condition_barcode = conditions_by_name[shelf_condition]
-        if eval(config['ConditionsDamageFlag'][condition_barcode]):
-          item['itemDamagedStatusId'] = item_damage_status
-          item['itemDamagedStatusDate'] = timestamp
-
-      try:
-        result = folio.folio_put(
-          path = f"/inventory/items/{item['id']}",
-          payload = item,
-        )
-        results.append({
-          'barcode': barcode,
-          'text': 'Saved',
-          'success': True,
-        })
-      except HTTPStatusError as error:
-        results.append({
-          'barcode': barcode,
-          'text': str(error),
-          'success': False,
-        })
-      
+      item = load_item(folio, item_id)
+      item = modify_item(item, shelf_status, shelf_condition)
+      result = save_item(folio, item)
+      results.append(result)
     return results
   
   return run_with_folio_client(save_items_internal)
+
+def validate_item_input(item_input):
+  error = None
+  barcode = item_input.get('barcode')
+  if not validate_barcode(barcode):
+    return validation_error(barcode, f'Invalid barcode: {barcode}')
+  if not validate_item_id(item_input.get('id')):
+    return validation_error(barcode, f'Invalid item id: {item_input.get("id")}')
+  if not validate_shelf_status(item_input.get('shelf_status')):
+    return validation_error(barcode, f'Invalid shelf status: {item_input.get("shelf_status")}')
+  if not validate_shelf_condition(item_input.get('shelf_condition')):
+    return validation_error(barcode, f'Invalid shelf condition: {item_input.get("shelf_condition")}')
+  return None
+
+def validation_error(barcode, message):
+    return {
+      'barcode': barcode,
+      'text': message,
+      'success': False,
+    }
+
+def load_item(folio, item_id):
+  item = folio.folio_get(
+    path = f'/inventory/items/{item_id}'
+  )
+  return item
+
+def modify_item(item, shelf_status, shelf_condition):
+  item['statisticalCodeIds'].append(inventoried_statistical_code)
+  timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+  username = 'abc123' # TODO real username
+  item['notes'].append({
+    'itemNoteTypeId': inventoried_item_note_type,
+    'note': f"Shelf status: {shelf_status}. Inventoried at {timestamp} by {username}.",
+    'staffOnly': True,
+  })
+  if shelf_condition:
+    item['notes'].append({
+      'itemNoteTypeId': inventoried_item_condition_note_type,
+      'note': f"{shelf_condition}. Inventoried at {timestamp} by {username}.",
+      'staffOnly': True,
+    })
+
+    condition_barcode = conditions_by_name[shelf_condition]
+    if eval(config['ConditionsDamageFlag'][condition_barcode]):
+      item['itemDamagedStatusId'] = item_damage_status
+      item['itemDamagedStatusDate'] = timestamp
+
+  return item
+
+def save_item(folio, item):
+  try:
+    folio.folio_put(
+      path = f"/inventory/items/{item['id']}",
+      payload = item,
+    )
+    return {
+      'barcode': item.get('barcode'),
+      'text': 'Saved',
+      'success': True,
+    }
+  except HTTPStatusError as error:
+    return {
+      'barcode': item.get('barcode'),
+      'text': str(error),
+      'success': False,
+    }
 
 def enrich_record(record):
   statistical_codes = json.loads(record['statistical_codes'])
@@ -210,13 +230,13 @@ def enrich_record(record):
   return record
 
 def validate_barcode(barcode):
-  return re.match('^[0-9]*$', barcode)
+  return barcode and re.match('^[0-9]*$', barcode)
 
 def validate_item_id(item_id):
-  return re.match('^[a-f0-9-]*$', item_id)
+  return item_id and re.match('^[a-f0-9-]*$', item_id)
 
 def validate_shelf_status(shelf_status):
-  return re.match('^[A-Za-z ]*$', shelf_status)
+  return shelf_status and re.match('^[A-Za-z ]*$', shelf_status)
 
-def validate_shelf_condition(shelf_status):
-  return re.match('^[A-Za-z ]*$', shelf_status)
+def validate_shelf_condition(shelf_condition):
+  return not shelf_condition or re.match('^[A-Za-z ]*$', shelf_condition)
