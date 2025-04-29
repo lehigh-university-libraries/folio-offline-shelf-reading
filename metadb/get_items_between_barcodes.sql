@@ -8,6 +8,7 @@ CREATE FUNCTION get_items_between_barcodes(
 )
 RETURNS TABLE (
     barcode TEXT,
+    id UUID,
     effective_shelving_order TEXT,
     item_call_number TEXT,
     holdings_call_number TEXT,
@@ -34,6 +35,7 @@ WITH
 
 SELECT 
 	item.barcode, 
+	item.id,
 	item.effective_shelving_order, 
 	item.item_level_call_number AS item_call_number, 
 	holdings.call_number AS holdings_call_number, 
