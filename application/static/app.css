@@ -47,10 +47,6 @@ section.table_section {
     }
 
     tbody {
-        tr.expected {
-            background-color: lightyellow;
-        }
-    
         tr.already-inventoried {
             background-color: lightsalmon;
         }
@@ -61,6 +57,10 @@ section.table_section {
     
         tr.result-failure {
             background-color: lightsalmon;
+        }
+
+        tr.expected {
+            background-color: lightyellow;
         }
     }
 } 
