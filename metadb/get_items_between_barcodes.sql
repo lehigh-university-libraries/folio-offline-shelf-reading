@@ -59,6 +59,7 @@ AND item.effective_shelving_order >=
     (SELECT effective_shelving_order FROM bookends WHERE row_num = 1)
 AND item.effective_shelving_order <= 
     (SELECT effective_shelving_order FROM bookends WHERE row_num = 2)
+AND not item.discovery_suppress
 ORDER BY item.effective_shelving_order
 $$
 LANGUAGE SQL;
