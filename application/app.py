@@ -126,7 +126,10 @@ def load_items():
         'limit': 1000
       }
     )
-    return result['records']
+    records = result['records']
+    for record in records:
+      record = enrich_record(record)
+    return records
   
   return run_with_folio_client(load_items_internal)
   
@@ -185,6 +188,11 @@ def save_items():
     return "Saved items"
   
   return run_with_folio_client(save_items_internal)
+
+def enrich_record(record):
+  statistical_codes = json.loads(record['statistical_codes'])
+  record['local_inventoried'] = inventoried_statistical_code in statistical_codes
+  return record
 
 def validate_barcode(barcode):
   return re.match('^[0-9]*$', barcode)

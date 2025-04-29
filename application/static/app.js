@@ -48,12 +48,17 @@ function printItemsTable(items) {
   printItemsTableHeader();
   for (item of items) {
     const callNumber = item.item_call_number ?? item.holdings_call_number;
-    const itemStatus = item.item_status == 'Available' ? '' : item.item_status;
+    let itemStatus = item.item_status == 'Available' ? '' : item.item_status;
+    let alreadyInventoried = false;
+    if (item.local_inventoried) {
+      itemStatus = 'Already inventoried'; 
+      alreadyInventoried = true;
+    }
     document.querySelector("#items_table tbody").insertAdjacentHTML("beforeend", `
-      <tr>
+      <tr ${alreadyInventoried ? 'class="already-inventoried"' : ''}>
         <td class="barcode">${item.barcode}</td>
         <td>${callNumber}</td>
-        <td>${itemStatus}
+        <td>${itemStatus}</td>
         <td>${item.title}</td>
         <td class="shelf_status"><input type="text" disabled></td>
         <td class="shelf_condition"></td>
