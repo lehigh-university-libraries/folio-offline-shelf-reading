@@ -1,6 +1,18 @@
 
+body {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+}
+
 h1 {
     margin-bottom: 0;
+}
+
+hr {
+    width: 100%;
 }
 
 .control_sections {
@@ -13,28 +25,42 @@ h1 {
     }
 }
 
+section.table_section {
+    overflow: auto;
+}
+
 #items_table {
     border: 1px solid black;
     border-spacing: 0;
 
-    tr.expected {
-        background-color: lightyellow;
-    }
-
-    tr.already-inventoried {
-        background-color: lightsalmon;
-    }
-
-    tr.result-success {
-        background-color: lightgreen;
-    }
-
-    tr.result-failure {
-        background-color: lightsalmon;
-    }
-
     td, th {
         border: 1px solid black;
         padding: 5px;
+    }
+
+    thead {
+        tr th {
+            position: sticky;
+            top: 0;
+            background-color: white;
+        }
+    }
+
+    tbody {
+        tr.expected {
+            background-color: lightyellow;
+        }
+    
+        tr.already-inventoried {
+            background-color: lightsalmon;
+        }
+    
+        tr.result-success {
+            background-color: lightgreen;
+        }
+    
+        tr.result-failure {
+            background-color: lightsalmon;
+        }
     }
 } 
