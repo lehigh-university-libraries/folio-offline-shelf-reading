@@ -152,6 +152,8 @@ def save_items():
       item = load_item(folio, item_id)
       item = modify_item(item, shelf_status, shelf_condition)
       result = save_item(folio, item)
+      if (item_input.get('shelf_status') == 'Missing'):
+        result = mark_item_missing(folio, item)
       results.append(result)
     return results
   
@@ -215,6 +217,24 @@ def save_item(folio, item):
     return {
       'barcode': item.get('barcode'),
       'text': 'Saved',
+      'success': True,
+    }
+  except HTTPStatusError as error:
+    return {
+      'barcode': item.get('barcode'),
+      'text': str(error),
+      'success': False,
+    }
+  
+def mark_item_missing(folio, item):
+  try:
+    folio.folio_post(
+      path = f"/inventory/items/{item['id']}/mark-missing",
+      payload = None,
+    )
+    return {
+      'barcode': item.get('barcode'),
+      'text': 'Marked as missing',
       'success': True,
     }
   except HTTPStatusError as error:
