@@ -25,6 +25,14 @@ h1 {
         background-color: lightsalmon;
     }
 
+    tr.result-success {
+        background-color: lightgreen;
+    }
+
+    tr.result-failure {
+        background-color: lightsalmon;
+    }
+
     td, th {
         border: 1px solid black;
         padding: 5px;

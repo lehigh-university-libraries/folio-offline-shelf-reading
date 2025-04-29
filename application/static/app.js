@@ -65,6 +65,7 @@ function printItemsTable(items) {
         <td>${item.title}</td>
         <td class="shelf_status"><input type="text" disabled></td>
         <td class="shelf_condition"></td>
+        <td class="result"></td>
       </tr>
     `);
   }
@@ -80,6 +81,7 @@ function printItemsTableHeader() {
       <th>Title</th>
       <th>Shelf Status</th>
       <th>Shelf Condition</th>
+      <th>Result</th>
     </tr>
     `);
 }
@@ -174,10 +176,27 @@ async function saveToFolio() {
     if (!response.ok) {
       throw new Error(`Response: ${response.status} ${await response.text()}`);
     }
+    const results = await response.json();
+    printResults(results);
   } catch (error) {
     beep(error.message);
   }
 };
+
+function printResults(results) {
+  for (result of results) {
+    const row = getRowForBarcode(result.barcode);
+    const tr = document.querySelector(`#items_table tbody tr:nth-child(${row})`);
+    if (result.success) {
+      tr.classList.add('result-success');
+    }
+    else {
+      tr.classList.add('result-failure');
+    }
+    const td = tr.querySelector('td.result');
+    td.textContent = result.text;
+  }
+}
 
 function beep(text) {
   BEEP.play();

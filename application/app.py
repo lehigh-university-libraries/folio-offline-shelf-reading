@@ -2,6 +2,7 @@ from configparser import ConfigParser
 from datetime import datetime
 from flask import Flask, g, render_template, request #pip install flask
 from folioclient import FolioClient #pip install folioclient
+from httpx import HTTPStatusError
 import json
 import re
 
@@ -138,7 +139,12 @@ def save_items():
   items_input = request.json
 
   def save_items_internal(folio):
+    results = []
     for item_input in items_input:
+      barcode = item_input['barcode']
+      if not validate_barcode(barcode):
+        return f'Invalid barcode: {barcode}', 400
+
       item_id = item_input['id']
       if not validate_item_id(item_id):
         return f'Invalid item id: {item_id}', 400
@@ -177,12 +183,24 @@ def save_items():
           item['itemDamagedStatusId'] = item_damage_status
           item['itemDamagedStatusDate'] = timestamp
 
-      result = folio.folio_put(
-        path = f"/inventory/items/{item['id']}",
-        payload = item,
-      )
-
-    return "Saved items"
+      try:
+        result = folio.folio_put(
+          path = f"/inventory/items/{item['id']}",
+          payload = item,
+        )
+        results.append({
+          'barcode': barcode,
+          'text': 'Saved',
+          'success': True,
+        })
+      except HTTPStatusError as error:
+        results.append({
+          'barcode': barcode,
+          'text': str(error),
+          'success': False,
+        })
+      
+    return results
   
   return run_with_folio_client(save_items_internal)
 
