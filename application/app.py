@@ -67,7 +67,7 @@ def init_statistical_codes(folio):
 
   inventoried_code = config['FOLIO']['inventoried_statistical_code']
   global inventoried_statistical_code
-  inventoried_statistical_code = statistical_codes[inventoried_code]['id']
+  inventoried_statistical_code = statistical_codes[inventoried_code]
 
 def init_item_note_types(folio):
   result = folio.folio_get(
@@ -105,8 +105,9 @@ app = create_app()
 def home():
   return render_template(
     'index.html', 
+    cycle = inventoried_statistical_code['name'],
     test = dict(config['Testing']) if eval(config['Testing']['enabled']) else False
-    )
+  )
 
 @app.route('/load-conditions', methods=['GET'])
 def load_conditions():
@@ -199,7 +200,7 @@ def load_item(folio, item_id):
   return item
 
 def modify_item(item, shelf_status, shelf_condition):
-  item['statisticalCodeIds'].append(inventoried_statistical_code)
+  item['statisticalCodeIds'].append(inventoried_statistical_code['id'])
   timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
   username = 'abc123' # TODO real username
   item['notes'].append({
@@ -259,7 +260,7 @@ def mark_item_missing(folio, item):
 
 def enrich_record(record):
   statistical_codes = json.loads(record['statistical_codes'])
-  record['local_inventoried'] = inventoried_statistical_code in statistical_codes
+  record['local_inventoried'] = inventoried_statistical_code['id'] in statistical_codes
   return record
 
 def validate_barcode(barcode):
