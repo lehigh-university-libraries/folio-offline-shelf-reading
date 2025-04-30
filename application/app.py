@@ -8,6 +8,8 @@ import re
 
 from reporter import Reporter
 
+custom_condition_name = '<custom>'
+
 config = None
 inventoried_statistical_code = None
 inventoried_item_note_type = None
@@ -215,7 +217,7 @@ def modify_item(item, shelf_status, shelf_condition):
       'staffOnly': True,
     })
 
-    condition_barcode = conditions_by_name[shelf_condition]
+    condition_barcode = conditions_by_name.get(shelf_condition, conditions_by_name.get(custom_condition_name))
     if eval(config['ConditionsDamageFlag'][condition_barcode]):
       item['itemDamagedStatusId'] = item_damage_status
       item['itemDamagedStatusDate'] = timestamp

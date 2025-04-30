@@ -6,6 +6,8 @@ const SHELF_STATUS_IGNORE_INVENTORIED = "Ignoring: Already inventoried";
 
 const ITEM_STATUS_ALREADY_INVENTORIED = "Already inventoried";
 
+const CUSTOM_CONDITION = "<custom>";
+
 const BATCH_SIZE = 20;
 
 // https://stackoverflow.com/a/23395136
@@ -194,7 +196,10 @@ function isConditionBarcode(barcode) {
 }
 
 function processConditionBarcode(conditionBarcode) {
-  const condition = conditionsMap.get(conditionBarcode);
+  let condition = conditionsMap.get(conditionBarcode);
+  if (condition == CUSTOM_CONDITION) {
+    condition = prompt("Please enter notes on the item's condition.");
+  }
   setCondition(currentRow, condition);
 }
 

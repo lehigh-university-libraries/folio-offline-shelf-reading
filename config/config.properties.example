@@ -16,14 +16,17 @@ item_damage_status=Damaged
 items_query_url=https://raw.githubusercontent.com/lehigh-university-libraries/folio-offline-shelf-reading/refs/heads/main/metadb/get_items_between_barcodes.sql
 
 [Conditions]
+# Note: Use the value <custom> to prompt the user to enter a condition
 11111 = Minor concern
 22222 = Major concern
 33333 = Spine label needs replacement
+99999 = <custom>
 
 [ConditionsDamageFlag]
 11111 = True
 22222 = True
 33333 = False
+99999 = True
 
 [Email]
 smtp_host = <smtp server>
