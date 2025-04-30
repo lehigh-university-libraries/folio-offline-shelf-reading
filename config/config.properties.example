@@ -25,6 +25,12 @@ items_query_url=https://raw.githubusercontent.com/lehigh-university-libraries/fo
 22222 = True
 33333 = False
 
+[Email]
+smtp_host = <smtp server>
+from_name = Someone
+from_address = someone@email.com
+to_address = someone@email.com
+
 [Testing]
 
 enabled = False

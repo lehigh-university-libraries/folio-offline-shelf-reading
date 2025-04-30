@@ -16,6 +16,8 @@ let itemBarcodes;
 let currentRow;
 let expectedRow;
 
+let unknownBarcodes = [];
+
 addEventListener("load", (event) => {
   loadConditions();
 });
@@ -69,7 +71,7 @@ function printItemsTable(items) {
         ${alreadyInventoried ? 'class="already-inventoried"' : ''}
       >
         <td class="barcode">${item.barcode}</td>
-        <td>${callNumber}</td>
+        <td class="call_number">${callNumber}</td>
         <td class="item_status">${itemStatus}</td>
         <td>${item.title}</td>
         <td class="shelf_status"><input type="text" disabled></td>
@@ -112,6 +114,7 @@ function processItemBarcode(barcode) {
   const scannedRow = getRowForBarcode(barcode);
   if (scannedRow < 1) {
     beep("Barcode not found in this range.\n\nPlease move the item to the cart.");
+    unknownBarcodes.push(barcode)
     return;
   }
 
@@ -208,17 +211,12 @@ function saveToFolio() {
     }
     start += BATCH_SIZE;
   }
+
+  reportResults();
 }
 
 async function saveBatch(batch) {
-  const payload = batch.map((tr) => {
-    return {
-      id: tr.dataset.itemId,
-      barcode: tr.querySelector('.barcode').textContent,
-      shelf_status: tr.querySelector('.shelf_status input').value,
-      shelf_condition: tr.querySelector('.shelf_condition').textContent,
-    }
-  });
+  const payload = rowsToData(batch);
   try {
     const response = await fetch('/save-items', {
       method: "POST",
@@ -237,6 +235,18 @@ async function saveBatch(batch) {
   }
 };
 
+function rowsToData(rows) {
+  return rows.map((tr) => {
+    return {
+      id: tr.dataset.itemId,
+      barcode: tr.querySelector('.barcode').textContent,
+      item_status: tr.querySelector('.item_status').textContent,
+      shelf_status: tr.querySelector('.shelf_status input').value,
+      shelf_condition: tr.querySelector('.shelf_condition').textContent,
+    }
+  });
+}
+
 function printResults(results) {
   for (result of results) {
     const row = getRowForBarcode(result.barcode);
@@ -249,6 +259,29 @@ function printResults(results) {
     }
     const td = tr.querySelector('td.result');
     td.textContent = result.text;
+  }
+}
+
+async function reportResults() {
+  const itemsInput = rowsToData(Array.from(document.querySelectorAll('#items_table tbody tr.marked')));
+
+  const payload = {
+    itemsInput: itemsInput,
+    unknownBarcodes: unknownBarcodes,
+  };
+  try {
+    const response = await fetch('/report-results', {
+      method: "POST",
+      body: JSON.stringify(payload),
+      headers: {
+        'Content-Type': 'application/json', 
+      },
+    });
+    if (!response.ok) {
+      throw new Error(`Response: ${response.status} ${await response.text()}`);
+    }
+  } catch (error) {
+    beep(error.message);
   }
 }
 

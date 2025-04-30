@@ -6,6 +6,8 @@ from httpx import HTTPStatusError
 import json
 import re
 
+from reporter import Reporter
+
 config = None
 inventoried_statistical_code = None
 inventoried_item_note_type = None
@@ -13,12 +15,17 @@ inventoried_item_condition_note_type = None
 item_damage_status = None
 conditions_by_name = None
 
+reporter = None
+
 def create_app():
   global config
   app = Flask(__name__)
 
   config = ConfigParser()
   config.read_file(open('config/config.properties'))
+
+  global reporter
+  reporter = Reporter(config)
 
   init_conditions()
   init_folio()
@@ -158,6 +165,12 @@ def save_items():
     return results
   
   return run_with_folio_client(save_items_internal)
+
+@app.route('/report-results', methods=['POST'])
+def report_results():
+  results = request.json
+  reporter.report_results(results)
+  return 'OK'
 
 def validate_item_input(item_input):
   error = None
