@@ -74,7 +74,7 @@ function printItemsTable(items) {
         <td class="call_number">${callNumber}</td>
         <td class="item_status">${itemStatus}</td>
         <td>${item.title}</td>
-        <td class="shelf_status"><input type="text" disabled></td>
+        <td class="shelf_status"></td>
         <td class="shelf_condition"></td>
         <td class="result"></td>
       </tr>
@@ -169,8 +169,7 @@ function getRowForBarcode(barcode) {
 
 function setShelfStatus(row, value) {
   const tr = document.querySelector(`#items_table tbody tr:nth-child(${row})`);
-  const input = tr.querySelector(`td.shelf_status input`);
-  input.value = value;
+  tr.querySelector(`td.shelf_status`).textContent = value;
   tr.classList.add("marked");
   if (value.includes("Ignoring")) {
     tr.classList.add("ignore");
@@ -241,7 +240,7 @@ function rowsToData(rows) {
       id: tr.dataset.itemId,
       barcode: tr.querySelector('.barcode').textContent,
       item_status: tr.querySelector('.item_status').textContent,
-      shelf_status: tr.querySelector('.shelf_status input').value,
+      shelf_status: tr.querySelector('.shelf_status').textContent,
       shelf_condition: tr.querySelector('.shelf_condition').textContent,
     }
   });
