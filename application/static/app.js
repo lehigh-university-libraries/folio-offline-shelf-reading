@@ -22,6 +22,7 @@ let unknownBarcodes = [];
 
 addEventListener("load", (event) => {
   loadConditions();
+  document.getElementById("start_barcode").focus();
 });
 
 async function loadConditions() {
@@ -35,6 +36,15 @@ async function loadConditions() {
 }
 
 async function loadItems() {
+  // Ensure both range barcodes are entered before loading
+  if (!document.getElementById("start_barcode").value.length) {
+    return;
+  }
+  if (!document.getElementById("end_barcode").value.length) {
+    document.getElementById("end_barcode").focus();
+    return;
+  } 
+
   try {
     const params = new URLSearchParams();
     params.append("start_barcode", document.getElementById("start_barcode").value);
@@ -45,6 +55,11 @@ async function loadItems() {
     }
 
     const items = await response.json();
+    if (!items.length) {
+      beep('No items in this range.');
+      return;
+    }
+
     itemBarcodes = items.map((item) => item.barcode);
 
     printItemsTable(items);
