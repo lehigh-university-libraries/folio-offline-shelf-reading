@@ -1,4 +1,5 @@
 import smtplib
+from flask import session
 from email.message import EmailMessage
 
 class Reporter:
@@ -11,7 +12,7 @@ class Reporter:
     self._to_address = config.get("Email", "to_address")
 
   def report_results(self, results: dict):
-    message_body = ''
+    message_body = f'Shelf reading done by {session["username"]}'
 
     unknown_barcodes = results['unknownBarcodes']
     message_body += '\n\nUnknown Barcodes:'

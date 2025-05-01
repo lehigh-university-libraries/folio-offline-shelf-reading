@@ -114,6 +114,7 @@ def home():
   return render_template(
     'index.html', 
     cycle = inventoried_statistical_code['name'],
+    username = session['username'],
     test = dict(config['Testing']) if eval(config['Testing']['enabled']) else False
   )
 
