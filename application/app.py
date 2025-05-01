@@ -1,6 +1,7 @@
 from configparser import ConfigParser
 from datetime import datetime
-from flask import Flask, g, render_template, request #pip install flask
+from flask import Flask, g, render_template, redirect, request, session, url_for #pip install flask
+# pip install pyopenssl
 from folioclient import FolioClient #pip install folioclient
 from httpx import HTTPStatusError
 import json
@@ -25,6 +26,8 @@ def create_app():
 
   config = ConfigParser()
   config.read_file(open('config/config.properties'))
+
+  app.secret_key = config['Testing']['secret_key']
 
   global reporter
   reporter = Reporter(config)
@@ -105,11 +108,29 @@ app = create_app()
 
 @app.route('/', methods=['GET'])
 def home():
+  if 'username' not in session:
+    return 'Log in first', 401
+
   return render_template(
     'index.html', 
     cycle = inventoried_statistical_code['name'],
     test = dict(config['Testing']) if eval(config['Testing']['enabled']) else False
   )
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+  if request.method == 'POST':
+      if not request.form['password'] == config['Testing']['password']:
+        return 'Nope', 401
+      session['username'] = request.form['username']
+      return redirect(url_for('home'))
+  return '''
+      <form method="post">
+          <p><input type=text name=username>
+          <p><input type=text name=password>
+          <p><input type=submit value=Login>
+      </form>
+  '''
 
 @app.route('/load-conditions', methods=['GET'])
 def load_conditions():
@@ -204,16 +225,15 @@ def load_item(folio, item_id):
 def modify_item(item, shelf_status, shelf_condition):
   item['statisticalCodeIds'].append(inventoried_statistical_code['id'])
   timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-  username = 'abc123' # TODO real username
   item['notes'].append({
     'itemNoteTypeId': inventoried_item_note_type,
-    'note': f"Shelf status: {shelf_status}. Inventoried at {timestamp} by {username}.",
+    'note': f"Shelf status: {shelf_status}. Inventoried at {timestamp} by {session['username']}.",
     'staffOnly': True,
   })
   if shelf_condition:
     item['notes'].append({
       'itemNoteTypeId': inventoried_item_condition_note_type,
-      'note': f"{shelf_condition}. Inventoried at {timestamp} by {username}.",
+      'note': f"{shelf_condition}. Inventoried at {timestamp} by {session['username']}.",
       'staffOnly': True,
     })
 
