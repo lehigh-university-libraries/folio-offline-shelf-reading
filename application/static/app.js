@@ -260,6 +260,7 @@ function rowsToData(rows) {
       id: tr.dataset.itemId,
       barcode: tr.querySelector('.barcode').textContent,
       item_status: tr.querySelector('.item_status').textContent,
+      call_number: tr.querySelector('.call_number').textContent,
       shelf_status: tr.querySelector('.shelf_status').textContent,
       shelf_condition: tr.querySelector('.shelf_condition').textContent,
     }

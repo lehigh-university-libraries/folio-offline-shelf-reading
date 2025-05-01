@@ -12,14 +12,18 @@ class Reporter:
     self._to_address = config.get("Email", "to_address")
 
   def report_results(self, results: dict):
-    message_body = f'Shelf reading done by {session["username"]}'
+    message_body = f'Shelf reading done by {session["username"]}.'
+
+    items_input = results['itemsInput']
+    message_body += f'\n\nItems scanned + missing: {len(items_input)}'
+    message_body += f'\n\nFrom barcode {items_input[0]["barcode"]}, call number {items_input[0]["call_number"]}'
+    message_body += f'\n\n  To barcode {items_input[-1]["barcode"]}, call number {items_input[-1]["call_number"]}'
 
     unknown_barcodes = results['unknownBarcodes']
     message_body += '\n\nUnknown Barcodes:'
     for barcode in unknown_barcodes:
        message_body += f'\n{barcode}'
 
-    items_input = results['itemsInput']
     items_by_condition = self._group_by(items_input, 'shelf_condition')
     message_body += self._format_section('Shelf Condition', items_by_condition)
 
