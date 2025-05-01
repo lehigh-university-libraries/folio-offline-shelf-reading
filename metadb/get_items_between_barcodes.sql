@@ -57,9 +57,12 @@ AND item.effective_location_id IN
     (SELECT effective_location_id FROM bookends WHERE row_num = 2)
 AND item.effective_shelving_order >= 
     (SELECT effective_shelving_order FROM bookends WHERE row_num = 1)
+	COLLATE ucs_basic
 AND item.effective_shelving_order <= 
     (SELECT effective_shelving_order FROM bookends WHERE row_num = 2)
+	COLLATE ucs_basic
 AND not item.discovery_suppress
-ORDER BY item.effective_shelving_order COLLATE ucs_basic
+ORDER BY item.effective_shelving_order
+	COLLATE ucs_basic
 $$
 LANGUAGE SQL;
