@@ -22,7 +22,10 @@ WITH
 	bookends AS (
 		SELECT 
 	        *, 
-	        row_number() OVER (ORDER BY effective_shelving_order) AS row_num 
+	        row_number() OVER (
+				ORDER BY effective_shelving_order
+					COLLATE ucs_basic
+			) AS row_num 
 	    FROM folio_inventory.item__t
 		WHERE barcode IN (start_barcode, end_barcode)
 	),
