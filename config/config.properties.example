@@ -37,6 +37,8 @@ to_address = someone@email.com
 [Testing]
 
 enabled = False
+secret_key = foo
+password = bar
 
 #start_barcode = 12345
 #end_barcode = 67890
