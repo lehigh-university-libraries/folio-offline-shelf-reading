@@ -1,0 +1,7 @@
+.dockerignore
+.git
+.gitignore
+.github
+gha-creds-*.json
+Dockerfile
+.github/*

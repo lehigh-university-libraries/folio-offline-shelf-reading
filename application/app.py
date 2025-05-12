@@ -15,8 +15,10 @@ from folioclient import FolioClient  # pip install folioclient
 from httpx import HTTPStatusError
 import json
 import re
+import os
+import logging
 
-from reporter import Reporter
+from application.reporter import Reporter
 
 custom_condition_name = "<custom>"
 
@@ -36,6 +38,11 @@ def create_app():
 
     config = ConfigParser()
     config.read_file(open("config/config.properties"))
+    dir = os.path.dirname(__file__)
+    dir = os.path.dirname(dir)
+    config_path = os.path.join(dir, "config", "config.properties")
+    with open(config_path, "r", encoding="utf-8") as f:
+        config.read_file(f)
 
     app.secret_key = config["Testing"]["secret_key"]
 
@@ -351,3 +358,19 @@ def validate_shelf_status(shelf_status):
 
 def validate_shelf_condition(shelf_condition):
     return not shelf_condition or re.match("^[A-Za-z ]*$", shelf_condition)
+
+
+@app.route("/healthcheck")
+def healthcheck():
+    return "OK"
+
+
+class HealthCheckFilter(logging.Filter):
+    def filter(self, record: logging.LogRecord) -> bool:
+        return record.getMessage().find("/healthcheck") == -1
+
+
+# Remove /healthcheck from application server logs
+logging.getLogger("gunicorn.access").addFilter(HealthCheckFilter())
+
+logger = logging.getLogger(__name__)
