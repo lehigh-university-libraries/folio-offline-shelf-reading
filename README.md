@@ -21,14 +21,4 @@ A shelf-reading (inventory check) process for FOLIO items.  Using a laptop, a ba
 
 ## Deployment
 
-- Clone this repo
-- Install (via pip): flask, pyopenssl, folioclient
-- Create and configure `config.properties` based on the example
-
-For test purposes only (uses a self-signed cert, NOT secure):
-
-```
-flask --app application/app run --cert=adhoc --host=0.0.0.0 -p some-port-number &
-```
-
-A production-safe Docker-based deployment is in the works.
+See https://github.com/lehigh-university-libraries/linderman?tab=readme-ov-file#initial-setup
