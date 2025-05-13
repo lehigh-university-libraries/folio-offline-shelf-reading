@@ -29,7 +29,7 @@
       matchUpdateTypes: [
         'major',
       ],
-      groupName: 'all major updates',
+      groupName: null,
       schedule: [
         'after 10pm on the first day of the month',
       ],
