@@ -61,7 +61,7 @@ jobs:
         run: |-
           # only cache main tag to GHCR
           if [ "${{steps.extract_tag.outputs.tag}}" = "main" ]; then
-            echo "cache-to=type=registry,ref=ghcr.io/lehigh-university-libraries/shelf-reading:cache,mode=max" >> $GITHUB_OUTPUT
+            echo "cache-to=type=registry,ref=ghcr.io/lehigh-university-libraries/folio-offline-shelf-reading:cache,mode=max" >> $GITHUB_OUTPUT
           else
             echo "cache-to=" >> $GITHUB_OUTPUT
           fi
