@@ -15,7 +15,7 @@ RUN apt-get update \
 COPY requirements.txt /app
 RUN pip install --no-cache-dir -r /app/requirements.txt
 
-ENV FLASK_APP=GenerateEmbedding \
+ENV FLASK_APP=ShelfReading \
     MODEL_PATH=/app/models \
     ADDRESS=0.0.0.0 \
     PORT=8080 \
