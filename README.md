@@ -19,6 +19,20 @@ A shelf-reading (inventory check) process for FOLIO items.  Using a laptop, a ba
 - MetaDB
 - Python
 
-## Deployment
+## Development/Deployment
 
-See https://github.com/lehigh-university-libraries/linderman?tab=readme-ov-file#initial-setup
+1. Create and configure `config.properties` based on [the example](./config/config.properties.example)
+1. Clone this repo
+1. Start docker
+```
+git clone https://github.com/lehigh-university-libraries/folio-offline-shelf-reading
+cd folio-offline-shelf-reading
+# cp config/config.properties.example config/config.properties
+# make edits to config/config.properties
+docker run \
+  -v ./:/app
+  -p 8080:8080 \
+  --rm \
+  --name folio-offline-shelf-reading \
+  ghcr.io/lehigh-university-libraries/folio-offline-shelf-reading:main
+```
