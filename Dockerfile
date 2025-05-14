@@ -19,10 +19,11 @@ ENV FLASK_APP=ShelfReading \
     MODEL_PATH=/app/models \
     ADDRESS=0.0.0.0 \
     PORT=8080 \
-    WORKERS=4
+    WORKERS=4 \
+    SCRIPT_NAME=/
 
 COPY . /app
 
 ENTRYPOINT ["/app/docker-entrypoint.sh"]
 
-HEALTHCHECK CMD curl -f http://localhost:$PORT/healthcheck
+HEALTHCHECK CMD curl -f http://localhost:${PORT}${SCRIPT_NAME}healthcheck
