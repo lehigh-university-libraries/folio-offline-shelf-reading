@@ -26,7 +26,7 @@ addEventListener("load", (event) => {
 });
 
 async function loadConditions() {
-  const response = await fetch('/load-conditions');
+  const response = await fetch('load-conditions');
   if (!response.ok) {
     throw new Error(`Response: ${response.status} ${await response.text()}`);
   }
@@ -49,7 +49,7 @@ async function loadItems() {
     const params = new URLSearchParams();
     params.append("start_barcode", document.getElementById("start_barcode").value);
     params.append("end_barcode", document.getElementById("end_barcode").value);
-    const response = await fetch(`/load-items?${params}`);
+    const response = await fetch(`load-items?${params}`);
     if (!response.ok) {
       throw new Error(`Response: ${response.status} ${await response.text()}`);
     }
@@ -237,7 +237,7 @@ function saveToFolio() {
 async function saveBatch(batch) {
   const payload = rowsToData(batch);
   try {
-    const response = await fetch('/save-items', {
+    const response = await fetch('save-items', {
       method: "POST",
       body: JSON.stringify(payload),
       headers: {
@@ -290,7 +290,7 @@ async function reportResults() {
     unknownBarcodes: unknownBarcodes,
   };
   try {
-    const response = await fetch('/report-results', {
+    const response = await fetch('report-results', {
       method: "POST",
       body: JSON.stringify(payload),
       headers: {
