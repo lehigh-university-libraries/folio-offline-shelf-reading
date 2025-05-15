@@ -12,7 +12,7 @@ on:
           - prod
 jobs:
   run:
-    uses: lehigh-university-libraries/gha/.github/workflows/deploy-linderman.yaml@main
+    uses: lehigh-university-libraries/gha/.github/workflows/linderman-deploy.yaml@main
     with:
       url: https://apps-${{ inputs.environment }}.lib.lehigh.edu/_rollout
     permissions:
