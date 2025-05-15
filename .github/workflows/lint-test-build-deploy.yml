@@ -86,7 +86,7 @@ jobs:
             ghcr.io/lehigh-university-libraries/folio-offline-shelf-reading:${{steps.extract_tag.outputs.tag}}
   deploy:
     needs: [build-push]
-    uses: lehigh-university-libraries/gha/.github/workflows/deploy-linderman.yaml@main
+    uses: lehigh-university-libraries/gha/.github/workflows/linderman-deploy.yaml@main
     with:
       url: https://apps-test.lib.lehigh.edu/_rollout
     permissions:
