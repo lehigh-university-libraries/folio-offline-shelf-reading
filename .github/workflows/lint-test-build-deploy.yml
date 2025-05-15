@@ -13,6 +13,7 @@ concurrency:
 permissions:
   contents: read
   packages: write
+  id-token: write
 
 jobs:
   lint:
@@ -89,6 +90,7 @@ jobs:
     uses: lehigh-university-libraries/gha/.github/workflows/linderman-deploy.yaml@main
     with:
       url: https://apps-test.lib.lehigh.edu/_rollout
+    secrets: inherit
     permissions:
       contents: read
       id-token: write
