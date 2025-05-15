@@ -1,4 +1,4 @@
-name: lint-build-push
+name: lint-build-push-deploy
 on:
   push:
     tags:
@@ -84,3 +84,11 @@ jobs:
           cache-to: ${{ steps.setup.outputs.cache-to }}
           tags: |
             ghcr.io/lehigh-university-libraries/folio-offline-shelf-reading:${{steps.extract_tag.outputs.tag}}
+  deploy:
+    needs: [build-push]
+    uses: lehigh-university-libraries/gha/.github/workflows/deploy-linderman.yaml@main
+    with:
+      url: https://apps-test.lib.lehigh.edu/_rollout
+    permissions:
+      contents: read
+      id-token: write

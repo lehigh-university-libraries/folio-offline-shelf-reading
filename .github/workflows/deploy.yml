@@ -1,0 +1,22 @@
+name: Deploy
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment'
+        required: true
+        default: 'test'
+        type: choice
+        options:
+          - test
+          - prod
+
+jobs:
+  deploy:
+    needs: [build-push]
+    uses: lehigh-university-libraries/gha/.github/workflows/deploy-linderman.yaml@main
+    with:
+      url: https://apps-${{ inputs.environment }}.lib.lehigh.edu/_rollout
+    permissions:
+      contents: read
+      id-token: write
