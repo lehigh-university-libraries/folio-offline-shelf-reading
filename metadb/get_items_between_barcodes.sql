@@ -64,7 +64,7 @@ AND item.effective_shelving_order >=
 AND item.effective_shelving_order <= 
     (SELECT effective_shelving_order FROM bookends WHERE row_num = 2)
 	COLLATE ucs_basic
-AND not item.discovery_suppress
+AND (item.discovery_suppress IS NULL OR NOT item.discovery_suppress)
 ORDER BY item.effective_shelving_order
 	COLLATE ucs_basic
 $$
