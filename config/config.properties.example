@@ -3,12 +3,22 @@
 
 base_url=https://myinstitution.folio.indexdata.com
 tenant=diku
+# This user should be created with the following FOLIO permissions:
+# - Inventory: View instances, holdings, and items
+# - Inventory: View, create, edit, mark missing items
+# - Reporting: All permissions
 username=folio_user
 password=some_password
 
+# This statistical code should represent the current year / cycle of shelf reading.
 inventoried_statistical_code=INV-2025
+
+# This item note type is used for notes on each item as it is inventoried.
 inventoried_item_note_type=Inventory
+
+# This item note is used for condition notes on inventoried items.
 inventoried_item_condition_note_type=Inventoried Condition
+
 item_damage_status=Damaged
 
 [MetaDB]

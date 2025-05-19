@@ -22,6 +22,7 @@ A shelf-reading (inventory check) process for FOLIO items.  Using a laptop, a ba
 ## Development/Deployment
 
 1. Create and configure `config.properties` based on [the example](./config/config.properties.example)
+    - This includes creating FOLIO statistical codes and item note types as specified in the example file. 
 1. Clone this repo
 1. Start docker
 ```
