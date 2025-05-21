@@ -166,6 +166,12 @@ def login():
   """
 
 
+@app.route("/logout", methods=["GET", "POST"])
+def logout():
+    session.clear()
+    return redirect(url_for("home"), code=301)
+
+
 @app.route("/load-conditions", methods=["GET"])
 def load_conditions():
     return config.items("Conditions")
