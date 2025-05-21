@@ -137,9 +137,10 @@ function processItemBarcode(barcode) {
   }
 
   currentRow = scannedRow;
-  const itemStatus = document
-    .querySelector(`#items_table tbody tr:nth-child(${currentRow}) td.item_status`)
-    .textContent;
+  const tr = document.querySelector(`#items_table tbody tr:nth-child(${currentRow})`)
+  const itemStatus = tr.querySelector(`td.item_status`).textContent;
+  tr.scrollIntoView();
+  
   if (currentRow == expectedRow) {
     processScannedRow(currentRow, itemStatus);
     setExpectedRow(expectedRow + 1);
