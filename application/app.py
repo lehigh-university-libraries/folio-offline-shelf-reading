@@ -140,8 +140,11 @@ app = create_app()
 @app.route("/", methods=["GET"])
 def home():
     if "username" not in session:
-        return "Log in first", 401
+        username = request.headers.get("X-Remote-User", None)
+        if not username:
+            return "Log in first", 401
 
+    session["username"] = username
     return render_template(
         "index.html",
         cycle=inventoried_statistical_code["name"],
