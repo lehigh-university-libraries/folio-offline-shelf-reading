@@ -169,7 +169,7 @@ def login():
 @app.route("/logout", methods=["GET", "POST"])
 def logout():
     session.clear()
-    return redirect(url_for("login"), code=301)
+    return redirect(url_for("home"), code=301)
 
 
 @app.route("/load-conditions", methods=["GET"])
