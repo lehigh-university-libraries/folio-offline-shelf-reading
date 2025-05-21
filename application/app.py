@@ -240,8 +240,24 @@ def save_items():
 @app.route("/report-results", methods=["POST"])
 def report_results():
     results = request.json
+    enrich_report_location(results)
     reporter.report_results(results)
     return "OK"
+
+
+def enrich_report_location(results):
+    items_input = results["itemsInput"]
+    if not len(items_input):
+        return
+    item_id = items_input[0]["id"]
+
+    def enrich_report_load_item(folio):
+        item = load_item(folio, item_id)
+        return item
+
+    item = run_with_folio_client(enrich_report_load_item)
+    location_name = item["effectiveLocation"]["name"]
+    results["locationName"] = location_name
 
 
 def validate_item_input(item_input):

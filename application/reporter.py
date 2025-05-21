@@ -13,7 +13,10 @@ class Reporter:
         self._to_address = config.get("Email", "to_address")
 
     def report_results(self, results: dict):
-        message_body = f'Shelf reading done by {session["username"]}.'
+        location_name = results["locationName"]
+        message_body = (
+            f'Shelf reading done by {session["username"]} in {location_name}.'
+        )
 
         items_input = results["itemsInput"]
         message_body += f"\n\nItems scanned + missing: {len(items_input)}"
