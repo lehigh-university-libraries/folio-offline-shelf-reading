@@ -165,6 +165,7 @@ def login():
       </form>
   """
 
+
 @app.route("/logout", methods=["GET", "POST"])
 def logout():
     session.clear()
