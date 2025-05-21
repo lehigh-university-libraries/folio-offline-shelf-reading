@@ -3,6 +3,7 @@ from datetime import datetime
 from flask import (
     Flask,
     g,
+    make_response,
     render_template,
     redirect,
     request,
@@ -172,7 +173,9 @@ def login():
 @app.route("/logout", methods=["GET", "POST"])
 def logout():
     session.clear()
-    return redirect(url_for("home"), code=301)
+    response = make_response(redirect(url_for("home")), code=301)
+    response.set_cookie("ldapAuth_session_token", "", expires=0)
+    return response
 
 
 @app.route("/load-conditions", methods=["GET"])
