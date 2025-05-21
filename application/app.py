@@ -175,6 +175,7 @@ def logout():
     session.clear()
     response = make_response(redirect(url_for("home")))
     response.set_cookie("ldapAuth_session_token", "", expires=0)
+    response.set_cookie("session", "", expires=0)
     return response
 
 
