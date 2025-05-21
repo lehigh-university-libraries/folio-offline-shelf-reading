@@ -143,8 +143,8 @@ def home():
         username = request.headers.get("X-Remote-User", None)
         if not username:
             return "Log in first", 401
+        session["username"] = username
 
-    session["username"] = username
     return render_template(
         "index.html",
         cycle=inventoried_statistical_code["name"],
