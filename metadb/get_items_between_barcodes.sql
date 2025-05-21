@@ -10,6 +10,7 @@ RETURNS TABLE (
     barcode TEXT,
     id UUID,
     effective_shelving_order TEXT,
+    local_shelving_order TEXT,
     item_call_number TEXT,
     holdings_call_number TEXT,
     item_status TEXT,
@@ -35,11 +36,11 @@ WITH
 		LEFT JOIN folio_inventory.item item_raw
 			ON item.id = item_raw.id
 	)
-
 SELECT 
 	item.barcode, 
 	item.id,
 	item.effective_shelving_order, 
+	item_notes.note as local_shelving_order, 
 	item.item_level_call_number AS item_call_number, 
 	holdings.call_number AS holdings_call_number, 
 	jsonb_extract_path_text(item_raw.jsonb, 'status', 'name'),
@@ -54,6 +55,8 @@ LEFT JOIN folio_inventory.instance__t inst
     ON holdings.instance_id = inst.id
 LEFT JOIN statistical_codes 
 	ON item.id = statistical_codes.id
+LEFT JOIN folio_derived.item_notes item_notes
+	ON item_notes.item_id = item.id
 WHERE item.effective_location_id IN 
     (SELECT effective_location_id FROM bookends WHERE row_num = 1)
 AND item.effective_location_id IN 
@@ -64,8 +67,9 @@ AND item.effective_shelving_order >=
 AND item.effective_shelving_order <= 
     (SELECT effective_shelving_order FROM bookends WHERE row_num = 2)
 	COLLATE ucs_basic
-AND (item.discovery_suppress IS NULL OR NOT item.discovery_suppress)
-ORDER BY item.effective_shelving_order
+AND NOT item.discovery_suppress
+AND (item_notes.note_type_name IS NULL OR item_notes.note_type_name = 'Shelving order')
+ORDER BY COALESCE (item_notes.note, item.effective_shelving_order)
 	COLLATE ucs_basic
 $$
 LANGUAGE SQL;

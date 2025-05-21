@@ -37,3 +37,11 @@ docker run \
   --name folio-offline-shelf-reading \
   ghcr.io/lehigh-university-libraries/folio-offline-shelf-reading:main
 ```
+
+## Custom Shelving Order
+
+In some cases, an item's FOLIO-generated shelving order field may not be sufficient to sort items correctly.  See for example [a constraint on Dewey cutter numbers](https://github.com/lehigh-university-libraries/folio-shelving-order?tab=readme-ov-file#non-standard-behavior).
+
+If an item has a note of type `Shelving order`, the value in that field is interpreted as a local shelving order, and is used as a sorting value instead of the item's shelving order field.  The sort logic looks to both fields, so only those items that require a custom local shelving order field need that note defined.
+
+The [FOLIO Update Local Shelving Order](https://github.com/lehigh-university-libraries/folio-update-local-shelving-order) tool adds these items notes to the relevant items, using [FOLIO Shelving Order](https://github.com/lehigh-university-libraries/folio-shelving-order) to generate the local shelving order.
