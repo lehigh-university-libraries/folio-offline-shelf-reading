@@ -64,6 +64,7 @@ async function loadItems() {
 
     printItemsTable(items);
     setExpectedRow(1);
+    document.querySelector("#load-items input[type=submit]").disabled = true;
   } catch (error) {
     beep(error.message);
   }
