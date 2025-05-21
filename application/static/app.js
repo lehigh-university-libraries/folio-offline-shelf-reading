@@ -201,11 +201,16 @@ function setCondition(row, value) {
 }
 
 function setExpectedRow(row) {
-  expectedRow = row;
   document.querySelectorAll("#items_table tbody tr").forEach((tr) => {
     tr.classList.remove("expected");
   });
-  document.querySelector(`#items_table tbody tr:nth-child(${row})`).classList.add("expected");
+  if (row <= itemBarcodes.length) {
+    expectedRow = row;
+    document.querySelector(`#items_table tbody tr:nth-child(${row})`).classList.add("expected");
+  }
+  else {
+    expectedRow = 0;
+  }
 }
 
 function isConditionBarcode(barcode) {
