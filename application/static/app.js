@@ -4,6 +4,7 @@ const SHELF_STATUS_PRESENT = "Present";
 const SHELF_STATUS_MISSING = "Missing";
 const SHELF_STATUS_NOT_AVAILABLE = "Unavailable item is on shelf";
 const SHELF_STATUS_IGNORE_INVENTORIED = "Ignoring: Already inventoried";
+const SHELF_STATUS_IGNORE_MISSING_AS_EXPECTED = "Ignoring: Missing as expected";
 
 const ITEM_STATUS_ALREADY_INVENTORIED = "Already inventoried";
 
@@ -238,7 +239,13 @@ function processSkippedRows() {
   for (let row = firstScannedRow; row <= lastScannedRow; row ++) {
     const tr = document.querySelector(`#items_table tbody tr:nth-child(${row}):not(.marked):not(.already-inventoried):not(.result-success)`);
     if (tr) {
-      tr.querySelector("td.shelf_status").textContent = SHELF_STATUS_MISSING;
+      const itemStatus = tr.querySelector("td.item_status").textContent;
+      if (!itemStatus.length) {
+        setShelfStatus(row, SHELF_STATUS_MISSING);
+      }
+      else {
+        setShelfStatus(row, SHELF_STATUS_IGNORE_MISSING_AS_EXPECTED);
+      }
     }
   }
 }
