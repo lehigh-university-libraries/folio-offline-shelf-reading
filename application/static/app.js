@@ -233,6 +233,8 @@ function saveToFolio() {
     }
     start += BATCH_SIZE;
   }
+
+  reportResults();
 }
 
 function processSkippedRows() {
