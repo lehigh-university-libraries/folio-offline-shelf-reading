@@ -177,6 +177,7 @@ def logout():
     # response.set_cookie("ldapAuth_session_token", "", expires=0)
     # response.set_cookie("session", "", expires=0)
     response.delete_cookie("ldapAuth_session_token")
+    response.headers.set("Clear-Site-Data", "*")
     return response
 
 
