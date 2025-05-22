@@ -15,8 +15,9 @@ const BEEP = new Audio("data:audio/wav;base64,//uQRAAAAWMSLwUIYAAsYkXgoQwAEaYLWf
 
 let conditionsMap;
 let itemBarcodes;
-let currentRow;
-let expectedRow;
+let previousScannedRow;
+let firstScannedRow = false;
+let lastScannedRow = false;
 
 let unknownBarcodes = [];
 
@@ -130,31 +131,34 @@ function scanNextBarcode() {
 
 function processItemBarcode(barcode) {
   const scannedRow = getRowForBarcode(barcode);
+
+  // Check for out-of-range items
   if (scannedRow < 1) {
     beep("Barcode not found in this range.\n\nPlease move the item to the cart.");
     unknownBarcodes.push(barcode)
     return;
   }
 
-  currentRow = scannedRow;
-  const tr = document.querySelector(`#items_table tbody tr:nth-child(${currentRow})`)
+  const tr = document.querySelector(`#items_table tbody tr:nth-child(${scannedRow})`)
   const itemStatus = tr.querySelector(`td.item_status`).textContent;
   tr.scrollIntoView();
   
-  if (currentRow == expectedRow) {
-    processScannedRow(currentRow, itemStatus);
-    setExpectedRow(expectedRow + 1);
+  // Check for out-of-order items
+  if (scannedRow < previousScannedRow) {
+    beep("Check and fix the shelving order of the last two books scanned.")
   }
-  else if (currentRow > expectedRow) {
-    for (skippedRow = expectedRow; skippedRow < currentRow; skippedRow++) {
-      processSkippedRow(skippedRow);
-    }
-    processScannedRow(currentRow, itemStatus);
-    setExpectedRow(currentRow + 1);
+
+  // Process scanned item
+  processScannedRow(scannedRow, itemStatus);
+  setExpectedRow(scannedRow + 1);
+
+  // Store range of has been scanned
+  previousScannedRow = scannedRow;
+  if (!firstScannedRow || scannedRow < firstScannedRow) {
+    firstScannedRow = scannedRow;
   }
-  else {
-    beep("The scanned item was misplaced; it should be shelved earlier in this range.\n\nPlease re-shelve it now.")
-    processScannedRow(currentRow, itemStatus);
+  if (!lastScannedRow || scannedRow > lastScannedRow) {
+    lastScannedRow = scannedRow;
   }
 }
 
@@ -166,19 +170,7 @@ function processScannedRow(row, itemStatus) {
     setShelfStatus(row, SHELF_STATUS_NOT_AVAILABLE);
   }
   else {
-    setShelfStatus(currentRow, SHELF_STATUS_PRESENT);
-  }
-}
-
-function processSkippedRow(skippedRow) {
-  const skippedRowitemStatus = document
-    .querySelector(`#items_table tbody tr:nth-child(${skippedRow}) td.item_status`)
-    .textContent;
-  if (skippedRowitemStatus.includes(ITEM_STATUS_ALREADY_INVENTORIED)) {
-    setShelfStatus(skippedRow, SHELF_STATUS_IGNORE_INVENTORIED);
-  }
-  else {
-    setShelfStatus(skippedRow, SHELF_STATUS_MISSING);
+    setShelfStatus(row, SHELF_STATUS_PRESENT);
   }
 }
 
@@ -201,15 +193,11 @@ function setCondition(row, value) {
 }
 
 function setExpectedRow(row) {
-  document.querySelectorAll("#items_table tbody tr").forEach((tr) => {
+  document.querySelectorAll("#items_table tbody tr.expected").forEach((tr) => {
     tr.classList.remove("expected");
   });
   if (row <= itemBarcodes.length) {
-    expectedRow = row;
     document.querySelector(`#items_table tbody tr:nth-child(${row})`).classList.add("expected");
-  }
-  else {
-    expectedRow = 0;
   }
 }
 
@@ -222,10 +210,12 @@ function processConditionBarcode(conditionBarcode) {
   if (condition == CUSTOM_CONDITION) {
     condition = prompt("Please enter notes on the item's condition.");
   }
-  setCondition(currentRow, condition);
+  setCondition(previousScannedRow, condition);
 }
 
 function saveToFolio() {
+  processSkippedRows();
+
   const rows = document.querySelectorAll(
     "#items_table tbody tr.marked:not(.already-inventoried):not(.result-success):not(.ignore)"
   );
@@ -237,8 +227,15 @@ function saveToFolio() {
     }
     start += BATCH_SIZE;
   }
+}
 
-  reportResults();
+function processSkippedRows() {
+  for (let row = firstScannedRow; row <= lastScannedRow; row ++) {
+    const tr = document.querySelector(`#items_table tbody tr:nth-child(${row}):not(.marked):not(.already-inventoried):not(.result-success)`);
+    if (tr) {
+      tr.querySelector("td.shelf_status").textContent = SHELF_STATUS_MISSING;
+    }
+  }
 }
 
 async function saveBatch(batch) {
