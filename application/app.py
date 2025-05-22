@@ -28,6 +28,7 @@ inventoried_item_note_type = None
 inventoried_item_condition_note_type = None
 item_damage_status = None
 conditions_by_name = None
+location_to_service_point = None
 
 reporter = None
 
@@ -79,6 +80,7 @@ def init_folio():
         init_statistical_codes(folio)
         init_item_note_types(folio)
         init_item_damaged_statuses(folio)
+        init_locations(folio)
 
     run_with_folio_client(init_folio_internal)
 
@@ -132,6 +134,18 @@ def init_item_damaged_statuses(folio):
     damage_status_code = config["FOLIO"]["item_damage_status"]
     global item_damage_status
     item_damage_status = item_damage_statuses[damage_status_code]["id"]
+
+
+def init_locations(folio):
+    result = folio.folio_get(
+        path="/locations",
+        key="locations",
+        query_params="limit=1000",
+    )
+    global location_to_service_point
+    location_to_service_point = {
+        location["id"]: location["primaryServicePoint"] for location in result
+    }
 
 
 app = create_app()
@@ -229,6 +243,11 @@ def save_items():
             item = load_item(folio, item_id)
             item = modify_item(item, shelf_status, shelf_condition)
             result = save_item(folio, item)
+            if (
+                item_input.get("shelf_status") == "Unavailable item is on shelf"
+                and item.get("status").get("name") == "Checked out"
+            ):
+                result = mark_item_checked_in(folio, item)
             if item_input.get("shelf_status") == "Missing":
                 result = mark_item_missing(folio, item)
             results.append(result)
@@ -348,6 +367,32 @@ def mark_item_missing(folio, item):
         return {
             "barcode": item.get("barcode"),
             "text": "Marked as missing",
+            "success": True,
+        }
+    except HTTPStatusError as error:
+        return {
+            "barcode": item.get("barcode"),
+            "text": str(error),
+            "success": False,
+        }
+
+
+def mark_item_checked_in(folio, item):
+    location = item["effectiveLocation"]["id"]
+    service_point = location_to_service_point.get(location)
+    current_time = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+    try:
+        folio.folio_post(
+            path=f"/circulation/check-in-by-barcode",
+            payload={
+                "itemBarcode": item.get("barcode"),
+                "servicePointId": service_point,
+                "checkInDate": current_time,
+            },
+        )
+        return {
+            "barcode": item.get("barcode"),
+            "text": "Checked in",
             "success": True,
         }
     except HTTPStatusError as error:

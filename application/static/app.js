@@ -1,4 +1,5 @@
 
+// If changing any of these values, check for changes in app.py as well.
 const SHELF_STATUS_PRESENT = "Present";
 const SHELF_STATUS_MISSING = "Missing";
 const SHELF_STATUS_NOT_AVAILABLE = "Unavailable item is on shelf";
