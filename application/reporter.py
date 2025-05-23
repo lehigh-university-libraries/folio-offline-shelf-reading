@@ -74,7 +74,7 @@ class Reporter:
         return message
 
     def _format_item(self, item):
-        return str(item)
+        return f"Barcode {item['barcode']}, call number: {item['call_number']}"
 
     def _format_results_message(self, results, heading):
         message = ""
