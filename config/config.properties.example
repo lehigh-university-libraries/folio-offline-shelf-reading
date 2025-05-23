@@ -4,6 +4,7 @@
 base_url=https://myinstitution.folio.indexdata.com
 tenant=diku
 # This user should be created with the following FOLIO permissions:
+# - Check in: All permissions
 # - Inventory: View instances, holdings, and items
 # - Inventory: View, create, edit, mark missing items
 # - Reporting: All permissions

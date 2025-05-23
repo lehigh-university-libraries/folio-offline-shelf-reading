@@ -11,8 +11,8 @@ addEventListener("load", (event) => {
         document.getElementById("next_barcode").focus();
     }
 });
-  
-document.body.addEventListener('click', (event) => { 
+
+document.body.addEventListener('click', (event) => {
     const target = event.target;
     if (target.matches('td.barcode')) {
         const barcode = target.textContent;
