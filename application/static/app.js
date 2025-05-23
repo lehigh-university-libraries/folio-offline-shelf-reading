@@ -49,18 +49,21 @@ async function loadItems() {
     return;
   }
 
+  setWaiting(true);
   try {
     const params = new URLSearchParams();
     params.append("start_barcode", document.getElementById("start_barcode").value);
     params.append("end_barcode", document.getElementById("end_barcode").value);
     const response = await fetch(`load-items?${params}`);
     if (!response.ok) {
+      setWaiting(false);
       throw new Error(`Response: ${response.status} ${await response.text()}`);
     }
 
     const items = await response.json();
     if (!items.length) {
       beepBad('No items in this range.');
+      setWaiting(false);
       return;
     }
 
@@ -68,9 +71,16 @@ async function loadItems() {
 
     printItemsTable(items);
     setExpectedRow(1);
-    document.querySelector("#load-items input[type=submit]").disabled = true;
+    document.querySelectorAll("#load-items input[type=submit]").disabled = true;
+    document.querySelectorAll("#load-items input[type=text]").forEach((input) => {
+      input.setAttribute("readonly", true);
+    });
+
+    document.querySelector(".table_section").classList.add("ready");
   } catch (error) {
     beepBad(error.message);
+  } finally {
+    setWaiting(false);
   }
 }
 
@@ -254,6 +264,7 @@ function processSkippedRows() {
 
 async function saveBatch(batch) {
   const payload = rowsToData(batch);
+  setWaiting(true);
   try {
     const response = await fetch('save-items', {
       method: "POST",
@@ -269,6 +280,8 @@ async function saveBatch(batch) {
     printResults(results);
   } catch (error) {
     beepBad(error.message);
+  } finally {
+    setWaiting(false);
   }
 };
 
@@ -349,4 +362,13 @@ function beepBad(text) {
 
 function beepGood() {
   BEEP_GOOD.play();
+}
+
+function setWaiting(isWaiting) {
+  if (isWaiting) {
+    document.body.classList.add("waiting");
+  }
+  else {
+    document.body.classList.remove("waiting");
+  }
 }

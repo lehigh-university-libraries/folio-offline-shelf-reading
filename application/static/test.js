@@ -7,8 +7,8 @@ if (testData['end_barcode']) {
 }
 
 addEventListener("load", (event) => {
-    if (testData['start_barcode'] && testData['end_barcode']) {
-        document.getElementById("next_barcode").focus();
+    if (testData['start_barcode']) {
+        document.getElementById("end_barcode").focus();
     }
 });
 

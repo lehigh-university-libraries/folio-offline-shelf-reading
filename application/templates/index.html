@@ -5,11 +5,15 @@
       <link rel="stylesheet" href="static/test.css"></style>
     {% endif %}
   </head>
+
   <body>
-    <h1>FOLIO Offline Shelf Reading -- User {{username}} <button class="logout" onclick="logout();"">(Log out)</button> -- {{ cycle }}</h1>
+
+    <h1>FOLIO Offline Shelf Reading &mdash; {{ cycle }} &mdash; User {{username}} <button class="logout" onclick="logout();">Log out</button> </h1>
+
     <div class="control_sections">
+
       <section>
-        <h2>Identify range to shelf-read.</h2>
+        <h2>Identify range to shelf-read</h2>
         <form id="load-items" onsubmit="event.preventDefault(); loadItems();">
           <div class="start_barcode">
             <label for="start_barcode">Start Barcode:</label>
@@ -19,9 +23,10 @@
             <label for="end_barcode">End Barcode:</label>
             <input type="text" id="end_barcode" name="end_barcode">
           </div>     
-          <input value="Submit" type="submit"></input>   
+          <input type="submit" hidden></input>   
         </form>
       </section>
+
       <section>
         <h2>Scan the next barcode</h2>
         <form id="scan_next_barcode" onsubmit="event.preventDefault(); scanNextBarcode();">
@@ -32,15 +37,18 @@
           <input type="submit" hidden />
         </form>
       </section>
+
       <section>
         <h2>After scanning all items</h2>
-        <p>Somewhere with good Wi-Fi...</p>
         <button onclick="saveToFolio();">Save to FOLIO</button>
       </section>
+
     </div>
+
     <hr/>
+
     <section class="table_section">
-      <h2>Items</h2>
+      <h2>Items within the range</h2>
       <form id="items_form">
         <table id="items_table">
           <thead>
@@ -50,6 +58,7 @@
         </table>
       </form>
     </section>
+
     <script src="static/app.js"></script>
     {% if test %}
       <script>
@@ -57,5 +66,6 @@
       </script>
       <script src="static/test.js"></script>
     {% endif %}
+
   </body>
 </html>
