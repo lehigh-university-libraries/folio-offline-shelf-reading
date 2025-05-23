@@ -170,14 +170,10 @@ def login():
   """
 
 
-@app.route("/logout", methods=["GET", "POST"])
+@app.route("/logout", methods=["POST"])
 def logout():
     session.clear()
     response = make_response(redirect(url_for("home")))
-    # response.set_cookie("ldapAuth_session_token", "", expires=0)
-    # response.set_cookie("session", "", expires=0)
-    response.delete_cookie("ldapAuth_session_token")
-    response.headers.set("Clear-Site-Data", "*")
     return response
 
 
