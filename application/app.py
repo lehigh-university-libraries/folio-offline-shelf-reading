@@ -3,6 +3,7 @@ from datetime import datetime
 from flask import (
     Flask,
     g,
+    make_response,
     render_template,
     redirect,
     request,
@@ -154,7 +155,10 @@ app = create_app()
 @app.route("/", methods=["GET"])
 def home():
     if "username" not in session:
-        return "Log in first", 401
+        username = request.headers.get("X-Remote-User", None)
+        if not username:
+            return "Log in first", 401
+        session["username"] = username
 
     return render_template(
         "index.html",
@@ -180,10 +184,11 @@ def login():
   """
 
 
-@app.route("/logout", methods=["GET", "POST"])
+@app.route("/logout", methods=["POST"])
 def logout():
     session.clear()
-    return redirect(url_for("home"), code=301)
+    response = make_response(redirect(url_for("home")))
+    return response
 
 
 @app.route("/load-conditions", methods=["GET"])

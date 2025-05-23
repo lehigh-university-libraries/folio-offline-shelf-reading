@@ -323,6 +323,25 @@ async function reportResults() {
   }
 }
 
+async function logout() {
+  try {
+    const response = await fetch('logout', {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic fake',
+      },
+    });
+    if (!response.ok) {
+      throw new Error(`Response: ${response.status} ${await response.text()}`);
+    }
+  } catch (error) {
+    beep(error.message);
+  }
+
+  location.reload();
+}
+
 function beepBad(text) {
   BEEP_BAD.play();
   alert(text);
