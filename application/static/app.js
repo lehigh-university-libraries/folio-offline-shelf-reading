@@ -47,7 +47,7 @@ async function loadItems() {
   if (!document.getElementById("end_barcode").value.length) {
     document.getElementById("end_barcode").focus();
     return;
-  } 
+  }
 
   try {
     const params = new URLSearchParams();
@@ -84,7 +84,7 @@ function printItemsTable(items) {
       if (itemStatus.length) {
         itemStatus += ', ';
       }
-      itemStatus += ITEM_STATUS_ALREADY_INVENTORIED; 
+      itemStatus += ITEM_STATUS_ALREADY_INVENTORIED;
       alreadyInventoried = true;
     }
     document.querySelector("#items_table tbody").insertAdjacentHTML("beforeend", `
@@ -145,7 +145,7 @@ function processItemBarcode(barcode) {
   const tr = document.querySelector(`#items_table tbody tr:nth-child(${scannedRow})`)
   const itemStatus = tr.querySelector(`td.item_status`).textContent;
   tr.scrollIntoView();
-  
+
   // Process scanned item
   processScannedRow(scannedRow, itemStatus);
   setExpectedRow(scannedRow + 1);
@@ -238,7 +238,7 @@ function saveToFolio() {
 }
 
 function processSkippedRows() {
-  for (let row = firstScannedRow; row <= lastScannedRow; row ++) {
+  for (let row = firstScannedRow; row <= lastScannedRow; row++) {
     const tr = document.querySelector(`#items_table tbody tr:nth-child(${row}):not(.marked):not(.already-inventoried):not(.result-success)`);
     if (tr) {
       const itemStatus = tr.querySelector("td.item_status").textContent;
@@ -259,7 +259,7 @@ async function saveBatch(batch) {
       method: "POST",
       body: JSON.stringify(payload),
       headers: {
-        'Content-Type': 'application/json', 
+        'Content-Type': 'application/json',
       },
     });
     if (!response.ok) {
@@ -312,7 +312,7 @@ async function reportResults() {
       method: "POST",
       body: JSON.stringify(payload),
       headers: {
-        'Content-Type': 'application/json', 
+        'Content-Type': 'application/json',
       },
     });
     if (!response.ok) {
