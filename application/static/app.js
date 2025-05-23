@@ -2,9 +2,9 @@
 // If changing any of these values, check for changes in app.py as well.
 const SHELF_STATUS_PRESENT = "Present";
 const SHELF_STATUS_MISSING = "Missing";
-const SHELF_STATUS_NOT_AVAILABLE = "Unavailable item is on shelf";
+const SHELF_STATUS_UNAVAILABLE_BUT_ON_SHELF = "Unavailable item is on shelf";
+const SHELF_STATUS_UNAVAILABLE_AS_EXPECTED = "Unavailable as expected";
 const SHELF_STATUS_IGNORE_INVENTORIED = "Ignoring: Already inventoried";
-const SHELF_STATUS_IGNORE_MISSING_AS_EXPECTED = "Ignoring: Missing as expected";
 
 const ITEM_STATUS_ALREADY_INVENTORIED = "Already inventoried";
 
@@ -173,7 +173,7 @@ function processScannedRow(row, itemStatus) {
     setShelfStatus(row, SHELF_STATUS_IGNORE_INVENTORIED);
   }
   else if (itemStatus.length > 0) {
-    setShelfStatus(row, SHELF_STATUS_NOT_AVAILABLE);
+    setShelfStatus(row, SHELF_STATUS_UNAVAILABLE_BUT_ON_SHELF);
   }
   else {
     setShelfStatus(row, SHELF_STATUS_PRESENT);
@@ -246,7 +246,7 @@ function processSkippedRows() {
         setShelfStatus(row, SHELF_STATUS_MISSING);
       }
       else {
-        setShelfStatus(row, SHELF_STATUS_IGNORE_MISSING_AS_EXPECTED);
+        setShelfStatus(row, SHELF_STATUS_UNAVAILABLE_AS_EXPECTED);
       }
     }
   }
