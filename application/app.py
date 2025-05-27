@@ -187,7 +187,9 @@ def login():
 @app.route("/logout", methods=["POST"])
 def logout():
     session.clear()
-    return "Logged out", 401
+    response = make_response("Logged out", 401)
+    response.delete_cookie("ldapAuth_session_token")
+    return response
 
 
 @app.route("/done/logout", methods=["GET"])
