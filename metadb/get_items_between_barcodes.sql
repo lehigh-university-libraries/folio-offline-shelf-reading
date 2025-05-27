@@ -23,11 +23,15 @@ WITH
 	bookends AS (
 		SELECT 
 	        *, 
+			item_notes.note AS local_shelving_order,
 	        row_number() OVER (
 				ORDER BY effective_shelving_order
 					COLLATE ucs_basic
 			) AS row_num 
 	    FROM folio_inventory.item__t
+		LEFT JOIN folio_derived.item_notes item_notes
+			ON item_notes.item_id = item__t.id
+			AND item_notes.note_type_name = 'Shelving order'
 		WHERE barcode IN (start_barcode, end_barcode)
 	),
 	statistical_codes AS (
@@ -57,18 +61,18 @@ LEFT JOIN statistical_codes
 	ON item.id = statistical_codes.id
 LEFT JOIN folio_derived.item_notes item_notes
 	ON item_notes.item_id = item.id
+	AND item_notes.note_type_name = 'Shelving order'
 WHERE item.effective_location_id IN 
     (SELECT effective_location_id FROM bookends WHERE row_num = 1)
 AND item.effective_location_id IN 
     (SELECT effective_location_id FROM bookends WHERE row_num = 2)
-AND item.effective_shelving_order >= 
-    (SELECT effective_shelving_order FROM bookends WHERE row_num = 1)
+AND COALESCE (item_notes.note, item.effective_shelving_order) >= 
+    (SELECT COALESCE (local_shelving_order, effective_shelving_order) FROM bookends WHERE row_num = 1)
 	COLLATE ucs_basic
-AND item.effective_shelving_order <= 
-    (SELECT effective_shelving_order FROM bookends WHERE row_num = 2)
+AND COALESCE (item_notes.note, item.effective_shelving_order) <= 
+    (SELECT COALESCE (local_shelving_order, effective_shelving_order) FROM bookends WHERE row_num = 2)
 	COLLATE ucs_basic
 AND NOT item.discovery_suppress
-AND (item_notes.note_type_name IS NULL OR item_notes.note_type_name = 'Shelving order')
 ORDER BY COALESCE (item_notes.note, item.effective_shelving_order)
 	COLLATE ucs_basic
 $$
