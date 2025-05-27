@@ -347,14 +347,13 @@ async function logout() {
         'Authorization': 'Basic fake',
       },
     });
-    if (!response.ok) {
+    if (response.status != 401) {
       throw new Error(`Response: ${response.status} ${await response.text()}`);
     }
+    location.href = "done/logout";
   } catch (error) {
     beep(error.message);
   }
-
-  location.reload();
 }
 
 function beepBad(text) {
