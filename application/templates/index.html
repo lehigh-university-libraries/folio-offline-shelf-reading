@@ -32,7 +32,7 @@
         <form id="scan_next_barcode" onsubmit="event.preventDefault(); scanNextBarcode();">
           <div class="next_barcode">
             <label for="next_barcode"></label>
-            <input type="text" id="next_barcode" name="next_barcode">
+            <input type="text" id="next_barcode" name="next_barcode" disabled>
           </div>
           <input type="submit" hidden />
         </form>
@@ -40,7 +40,7 @@
 
       <section>
         <h2>After scanning all items</h2>
-        <button onclick="saveToFolio();">Save to FOLIO</button>
+        <button id="save_to_folio" onclick="saveToFolio();" disabled>Save to FOLIO</button>
       </section>
 
     </div>
