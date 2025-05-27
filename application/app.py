@@ -190,7 +190,7 @@ def logout():
     return "Logged out", 401
 
 
-@app.route("/done-logout", methods=["GET"])
+@app.route("/done/logout", methods=["GET"])
 def done_logout():
     return render_template("logged_out.html", home=url_for("home"))
 
