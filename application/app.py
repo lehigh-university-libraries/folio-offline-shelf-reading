@@ -188,7 +188,7 @@ def login():
 def logout():
     session.clear()
     response = make_response("Logged out", 401)
-    response.delete_cookie("ldapAuth_session_token", path=url_for("home"))
+    response.delete_cookie("ldapAuth_session_token", path=url_for("home")[:-1])
     return response
 
 
