@@ -187,7 +187,7 @@ def login():
 @app.route("/logout", methods=["POST"])
 def logout():
     session.clear()
-    return ""
+    return "Logged out", 401
 
 
 @app.route("/done-logout", methods=["GET"])
