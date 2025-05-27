@@ -69,12 +69,14 @@ async function loadItems() {
 
     itemBarcodes = items.map((item) => item.barcode);
 
-    printItemsTable(items);
-    setExpectedRow(1);
     document.querySelectorAll("#load-items input[type=submit]").disabled = true;
     document.querySelectorAll("#load-items input[type=text]").forEach((input) => {
-      input.setAttribute("readonly", true);
+      input.disabled = true;
     });
+    document.getElementById("next_barcode").disabled = false;
+    document.getElementById("save_to_folio").disabled = false;
+    printItemsTable(items);
+    setExpectedRow(1);
 
     document.querySelector(".table_section").classList.add("ready");
   } catch (error) {
