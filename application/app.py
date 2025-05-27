@@ -170,6 +170,9 @@ def home():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    if not config.has_option("Testing", "password"):
+        return "Local testing is not enabled.", 400
+
     if request.method == "POST":
         if not request.form["password"] == config["Testing"]["password"]:
             return "Nope", 401
