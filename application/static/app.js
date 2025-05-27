@@ -348,11 +348,10 @@ async function logout() {
     if (!response.ok) {
       throw new Error(`Response: ${response.status} ${await response.text()}`);
     }
+    location.href = "done-logout";
   } catch (error) {
     beep(error.message);
   }
-
-  location.href = "done-logout";
 }
 
 function beepBad(text) {
