@@ -352,7 +352,7 @@ async function logout() {
     beep(error.message);
   }
 
-  location.reload();
+  location.href = "done-logout";
 }
 
 function beepBad(text) {

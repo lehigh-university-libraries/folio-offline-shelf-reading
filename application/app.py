@@ -187,6 +187,11 @@ def login():
 @app.route("/logout", methods=["POST"])
 def logout():
     session.clear()
+    return ""
+
+
+@app.route("/done-logout", methods=["POST"])
+def logout():
     return render_template("logged_out.html", home=url_for("home"))
 
 
