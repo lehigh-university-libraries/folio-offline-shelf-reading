@@ -187,8 +187,7 @@ def login():
 @app.route("/logout", methods=["POST"])
 def logout():
     session.clear()
-    response = make_response(redirect(url_for("home")))
-    return response
+    return render_template("logged_out.html", home=url_for("home"))
 
 
 @app.route("/load-conditions", methods=["GET"])
