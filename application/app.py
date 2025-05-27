@@ -191,7 +191,7 @@ def logout():
 
 
 @app.route("/done-logout", methods=["POST"])
-def logout():
+def done_logout():
     return render_template("logged_out.html", home=url_for("home"))
 
 
