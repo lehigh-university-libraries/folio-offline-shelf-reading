@@ -73,6 +73,7 @@ AND COALESCE (item_notes.note, item.effective_shelving_order) <=
     (SELECT COALESCE (local_shelving_order, effective_shelving_order) FROM bookends WHERE row_num = 2)
 	COLLATE ucs_basic
 AND (item.discovery_suppress IS NULL OR NOT item.discovery_suppress)
+AND item.barcode IS NOT NULL
 ORDER BY COALESCE (item_notes.note, item.effective_shelving_order)
 	COLLATE ucs_basic
 $$
