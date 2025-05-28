@@ -447,8 +447,12 @@ def healthcheck():
 
 
 class HealthCheckFilter(logging.Filter):
+    def __init__(self):
+        super().__init__()
+        self.healthcheck_path = os.environ.get("SCRIPT_NAME", "/") + "healthcheck"
+
     def filter(self, record: logging.LogRecord) -> bool:
-        return record.getMessage().find("/healthcheck") == -1
+        return record.getMessage().find(self.healthcheck_path) == -1
 
 
 # Remove /healthcheck from application server logs
