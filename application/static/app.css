@@ -28,6 +28,11 @@ h1 {
     background-color: lightgray;
     border-bottom: 1px solid black;
 
+    .help {
+        display: inline-flex;
+        text-decoration: none;
+    }
+
     button {
         vertical-align: middle;
     }

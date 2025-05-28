@@ -4,11 +4,22 @@
     {% if test %}
       <link rel="stylesheet" href="static/test.css"></style>
     {% endif %}
+    <script src="https://kit.fontawesome.com/d4be7eb685.js" crossorigin="anonymous"></script>
   </head>
 
   <body>
 
-    <h1>FOLIO Offline Shelf Reading &mdash; {{ cycle }} &mdash; User {{username}} <button class="logout" onclick="logout();">Log out</button> </h1>
+    <h1>
+      FOLIO Offline Shelf Reading 
+      <a href="https://github.com/lehigh-university-libraries/folio-offline-shelf-reading/blob/main/README.md#how-it-works--usage-example" target="_blank" class="help">
+        <span class="fa-regular fa-circle-question" title="Help"></span>
+      </a>
+      &mdash; 
+      {{ cycle }} 
+      &mdash; 
+      User {{username}} 
+      <button class="logout" onclick="logout();">Log out</button>
+    </h1>
 
     <div class="control_sections">
 
@@ -66,6 +77,5 @@
       </script>
       <script src="static/test.js"></script>
     {% endif %}
-
   </body>
 </html>
