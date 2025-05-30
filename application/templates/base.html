@@ -12,20 +12,8 @@
 
     <div class="control_sections">
 
-      <section>
-        <h2>Identify range to shelf-read</h2>
-        <form id="load-items" onsubmit="event.preventDefault(); loadItems();">
-          <div class="start_barcode">
-            <label for="start_barcode">Start Barcode:</label>
-            <input type="text" id="start_barcode" name="start_barcode">
-          </div>
-          <div class="end_barcode">
-            <label for="end_barcode">End Barcode:</label>
-            <input type="text" id="end_barcode" name="end_barcode">
-          </div>     
-          <input type="submit" hidden></input>   
-        </form>
-      </section>
+      {% block range_section %}
+      {% endblock %}
 
       <section>
         <h2>Scan the next barcode</h2>
@@ -48,7 +36,8 @@
     <hr/>
 
     <section class="table_section">
-      <h2>Items within the range</h2>
+      {% block table_header %}
+      {% endblock %}
       <form id="items_form">
         <table id="items_table">
           <thead>
@@ -59,7 +48,9 @@
       </form>
     </section>
 
-    <script src="static/app.js"></script>
+    <script src="static/base.js"></script>
+    {% block js %}
+    {% endblock %}
     {% if test %}
       <script>
         const testData = JSON.parse('{{ test | tojson }}');

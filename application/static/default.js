@@ -1,43 +1,14 @@
 
-// If changing any of these values, check for changes in app.py as well.
-const SHELF_STATUS_PRESENT = "Present";
-const SHELF_STATUS_MISSING = "Missing";
-const SHELF_STATUS_UNAVAILABLE_BUT_ON_SHELF = "Unavailable item is on shelf";
-const SHELF_STATUS_UNAVAILABLE_AS_EXPECTED = "Unavailable as expected";
-const SHELF_STATUS_IGNORE_INVENTORIED = "Ignoring: Already inventoried";
-
 const ITEM_STATUS_ALREADY_INVENTORIED = "Already inventoried";
 
-const CUSTOM_CONDITION = "<custom>";
-
-const BATCH_SIZE = 20;
-
-// Attribution in README.md
-const BEEP_GOOD = new Audio("static/beep-313342.mp3");
-const BEEP_BAD = new Audio("static/message-notification-103496.mp3");
-
-let conditionsMap;
-let itemBarcodes;
-let previousScannedRow;
 let firstScannedRow = false;
 let lastScannedRow = false;
 
 let unknownBarcodes = [];
 
 addEventListener("load", (event) => {
-  loadConditions();
   document.getElementById("start_barcode").focus();
 });
-
-async function loadConditions() {
-  const response = await fetch('load-conditions');
-  if (!response.ok) {
-    throw new Error(`Response: ${response.status} ${await response.text()}`);
-  }
-
-  const conditions = await response.json();
-  conditionsMap = new Map(conditions);
-}
 
 async function loadItems() {
   // Ensure both range barcodes are entered before loading
@@ -131,19 +102,6 @@ function printItemsTableHeader() {
     `);
 }
 
-function scanNextBarcode() {
-  const barcode = document.getElementById("next_barcode").value;
-  if (isConditionBarcode(barcode)) {
-    processConditionBarcode(barcode);
-  }
-  else {
-    processItemBarcode(barcode);
-  }
-
-  document.getElementById("next_barcode").value = null;
-  document.getElementById("next_barcode").focus();
-}
-
 function processItemBarcode(barcode) {
   const scannedRow = getRowForBarcode(barcode);
 
@@ -192,10 +150,6 @@ function processScannedRow(row, itemStatus) {
   }
 }
 
-function getRowForBarcode(barcode) {
-  return itemBarcodes.indexOf(barcode) + 1;
-}
-
 function setShelfStatus(row, value) {
   const tr = document.querySelector(`#items_table tbody tr:nth-child(${row})`);
   tr.querySelector(`td.shelf_status`).textContent = value;
@@ -203,11 +157,6 @@ function setShelfStatus(row, value) {
   if (value.includes("Ignoring")) {
     tr.classList.add("ignore");
   }
-}
-
-function setCondition(row, value) {
-  const td = document.querySelector(`#items_table tbody tr:nth-child(${row}) td.shelf_condition`);
-  td.textContent = value.trim();
 }
 
 function setExpectedRow(row) {
@@ -219,33 +168,13 @@ function setExpectedRow(row) {
   }
 }
 
-function isConditionBarcode(barcode) {
-  return conditionsMap.has(barcode);
-}
-
-function processConditionBarcode(conditionBarcode) {
-  let condition = conditionsMap.get(conditionBarcode);
-  if (condition == CUSTOM_CONDITION) {
-    condition = prompt("Please enter notes on the item's condition.");
-  }
-  setCondition(previousScannedRow, condition);
-}
-
 function saveToFolio() {
   processSkippedRows();
 
   const rows = document.querySelectorAll(
     "#items_table tbody tr.marked:not(.already-inventoried):not(.result-success):not(.ignore)"
   );
-  let start = 0;
-  while (start < rows.length) {
-    const batch = Array.from(rows).slice(start, start + BATCH_SIZE);
-    if (batch.length > 0) {
-      saveBatch(batch);
-    }
-    start += BATCH_SIZE;
-  }
-
+  saveBatches(rows);
   reportResults();
 }
 
@@ -264,29 +193,6 @@ function processSkippedRows() {
   }
 }
 
-async function saveBatch(batch) {
-  const payload = rowsToData(batch);
-  setWaiting(true);
-  try {
-    const response = await fetch('save-items', {
-      method: "POST",
-      body: JSON.stringify(payload),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    if (!response.ok) {
-      throw new Error(`Response: ${response.status} ${await response.text()}`);
-    }
-    const results = await response.json();
-    printResults(results);
-  } catch (error) {
-    beepBad(error.message);
-  } finally {
-    setWaiting(false);
-  }
-};
-
 function rowsToData(rows) {
   return rows.map((tr) => {
     return {
@@ -298,21 +204,6 @@ function rowsToData(rows) {
       shelf_condition: tr.querySelector('.shelf_condition').textContent,
     }
   });
-}
-
-function printResults(results) {
-  for (result of results) {
-    const row = getRowForBarcode(result.barcode);
-    const tr = document.querySelector(`#items_table tbody tr:nth-child(${row})`);
-    if (result.success) {
-      tr.classList.add('result-success');
-    }
-    else {
-      tr.classList.add('result-failure');
-    }
-    const td = tr.querySelector('td.result');
-    td.textContent = result.text;
-  }
 }
 
 async function reportResults() {
@@ -335,41 +226,5 @@ async function reportResults() {
     }
   } catch (error) {
     beepBad(error.message);
-  }
-}
-
-async function logout() {
-  try {
-    const response = await fetch('logout', {
-      method: "POST",
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Basic fake',
-      },
-    });
-    if (response.status != 401) {
-      throw new Error(`Response: ${response.status} ${await response.text()}`);
-    }
-    location.href = "done/logout";
-  } catch (error) {
-    beep(error.message);
-  }
-}
-
-function beepBad(text) {
-  BEEP_BAD.play();
-  alert(text);
-}
-
-function beepGood() {
-  BEEP_GOOD.play();
-}
-
-function setWaiting(isWaiting) {
-  if (isWaiting) {
-    document.body.classList.add("waiting");
-  }
-  else {
-    document.body.classList.remove("waiting");
   }
 }

@@ -153,7 +153,16 @@ app = create_app()
 
 
 @app.route("/", methods=["GET"])
-def home():
+def default():
+    return home("default")
+
+
+@app.route("/individual", methods=["GET"])
+def individual():
+    return home("individual")
+
+
+def home(mode):
     if "username" not in session:
         username = request.headers.get("X-Remote-User", None)
         if not username:
@@ -161,7 +170,7 @@ def home():
         session["username"] = username
 
     return render_template(
-        "index.html",
+        mode + ".html",
         cycle=inventoried_statistical_code["name"],
         username=session["username"],
         test=dict(config["Testing"]) if eval(config["Testing"]["enabled"]) else False,
@@ -247,14 +256,15 @@ def save_items():
                 results.append(validation_error)
                 continue
 
-            item_id = item_input["id"]
+            item_id = item_input["id"] if id in item_input else None
+            barcode = item_input["barcode"]
             shelf_status = item_input["shelf_status"]
             shelf_condition = (
                 item_input["shelf_condition"].strip()
                 if "shelf_condition" in item_input
                 else None
             )
-            item = load_item(folio, item_id)
+            item = load_item(folio, item_id, barcode)
             item = modify_item(item, shelf_status, shelf_condition)
             result = save_item(folio, item)
             if (
@@ -283,9 +293,10 @@ def enrich_report_location(results):
     if not len(items_input):
         return
     item_id = items_input[0]["id"]
+    barcode = items_input[0]["barcode"]
 
     def enrich_report_load_item(folio):
-        item = load_item(folio, item_id)
+        item = load_item(folio, item_id, barcode)
         return item
 
     item = run_with_folio_client(enrich_report_load_item)
@@ -319,8 +330,14 @@ def validation_error(barcode, message):
     }
 
 
-def load_item(folio, item_id):
-    item = folio.folio_get(path=f"/inventory/items/{item_id}")
+def load_item(folio, item_id, barcode):
+    if item_id:
+        item = folio.folio_get(path=f"/inventory/items/{item_id}")
+    else:
+        response = folio.folio_get(
+            path=f"/inventory/items", query_params={"query": f"barcode=={barcode}"}
+        )
+        item = response["items"][0]
     return item
 
 
@@ -430,7 +447,7 @@ def validate_barcode(barcode):
 
 
 def validate_item_id(item_id):
-    return item_id and re.match("^[a-f0-9-]*$", item_id)
+    return not item_id or re.match("^[a-f0-9-]*$", item_id)
 
 
 def validate_shelf_status(shelf_status):
