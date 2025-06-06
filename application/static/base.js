@@ -13,13 +13,30 @@ const BATCH_SIZE = 20;
 const BEEP_GOOD = new Audio("static/beep-313342.mp3");
 const BEEP_BAD = new Audio("static/message-notification-103496.mp3");
 
+let modeValue;
 let itemBarcodes;
 let previousScannedRow;
 let conditionsMap;
 
 addEventListener("load", (event) => {
   loadConditions();
+  modeValue = document.querySelector("#mode_select option:checked").value;
 });
+
+document.getElementById("mode_select").addEventListener("change", (event) => {
+  const saveEnabled = !document.getElementById("save_to_folio").disabled;
+  if (saveEnabled) {
+    const ok = confirm("Switching to a different mode will discard any scanned items below that have not yet been saved to FOLIO.  Are you sure?");
+    if (!ok) {
+      document.getElementById("mode_select").value = modeValue;
+      return;
+    }
+  }
+
+  const selected = document.querySelector("#mode_select option:checked");
+  const href = selected.value;
+  document.location.href = href;
+})
 
 async function loadConditions() {
   const response = await fetch('load-conditions');

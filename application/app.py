@@ -171,6 +171,7 @@ def home(mode):
 
     return render_template(
         mode + ".html",
+        mode=mode,
         cycle=inventoried_statistical_code["name"],
         username=session["username"],
         test=dict(config["Testing"]) if eval(config["Testing"]["enabled"]) else False,

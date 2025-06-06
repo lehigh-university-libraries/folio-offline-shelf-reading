@@ -1,6 +1,5 @@
 addEventListener("load", (event) => {
   document.getElementById("next_barcode").disabled = false;
-  document.getElementById("save_to_folio").disabled = false;
   document.getElementById("next_barcode").focus();
 
   printItemsTableHeader();
@@ -31,6 +30,7 @@ function processItemBarcode(barcode) {
     `);
   previousScannedRow = document.querySelectorAll("#items_table tbody tr").length;
   itemBarcodes.push(barcode);
+  document.getElementById("save_to_folio").disabled = false;
 }
 
 function saveToFolio() {

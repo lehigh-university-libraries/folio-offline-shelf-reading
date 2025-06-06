@@ -8,7 +8,20 @@
 
   <body>
 
-    <h1>FOLIO Offline Shelf Reading &mdash; {{ cycle }} &mdash; User {{username}} <button class="logout" onclick="logout();">Log out</button> </h1>
+    <h1>
+      FOLIO Offline Shelf Reading 
+      &mdash; 
+      {{ cycle }} 
+      &mdash;
+      Mode
+      <select id="mode_select">
+        <option value="./" {{ 'selected' if mode is eq "default" }}>Range</option>
+        <option value="./individual" {{ 'selected' if mode is eq "individual" }}>Individual</option>
+      </select>
+      &mdash; 
+      User {{username}} 
+      <button class="logout" onclick="logout();">Log out</button> 
+    </h1>
 
     <div class="control_sections">
 
