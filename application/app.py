@@ -266,15 +266,18 @@ def save_items():
                 else None
             )
             item = load_item(folio, item_id, barcode)
-            item = modify_item(item, shelf_status, shelf_condition)
-            result = save_item(folio, item)
-            if (
-                item_input.get("shelf_status") == "Unavailable item is on shelf"
-                and item.get("status").get("name") == "Checked out"
-            ):
-                result = mark_item_checked_in(folio, item)
-            if item_input.get("shelf_status") == "Missing":
-                result = mark_item_missing(folio, item)
+            if not item:
+                result = build_error(barcode, f"Unknown barcode: {barcode}")
+            else:
+                item = modify_item(item, shelf_status, shelf_condition)
+                result = save_item(folio, item)
+                if (
+                    item_input.get("shelf_status") == "Unavailable item is on shelf"
+                    and item.get("status").get("name") == "Checked out"
+                ):
+                    result = mark_item_checked_in(folio, item)
+                if item_input.get("shelf_status") == "Missing":
+                    result = mark_item_missing(folio, item)
             results.append(result)
         return results
 
@@ -309,21 +312,21 @@ def validate_item_input(item_input):
     error = None
     barcode = item_input.get("barcode")
     if not validate_barcode(barcode):
-        return validation_error(barcode, f"Invalid barcode: {barcode}")
+        return build_error(barcode, f"Invalid barcode: {barcode}")
     if not validate_item_id(item_input.get("id")):
-        return validation_error(barcode, f'Invalid item id: {item_input.get("id")}')
+        return build_error(barcode, f'Invalid item id: {item_input.get("id")}')
     if not validate_shelf_status(item_input.get("shelf_status")):
-        return validation_error(
+        return build_error(
             barcode, f'Invalid shelf status: {item_input.get("shelf_status")}'
         )
     if not validate_shelf_condition(item_input.get("shelf_condition")):
-        return validation_error(
+        return build_error(
             barcode, f'Invalid shelf condition: {item_input.get("shelf_condition")}'
         )
     return None
 
 
-def validation_error(barcode, message):
+def build_error(barcode, message):
     return {
         "barcode": barcode,
         "text": message,
@@ -338,7 +341,10 @@ def load_item(folio, item_id, barcode):
         response = folio.folio_get(
             path=f"/inventory/items", query_params={"query": f"barcode=={barcode}"}
         )
-        item = response["items"][0]
+        items = response["items"]
+        if not len(items):
+            return None
+        item = items[0]
     return item
 
 
