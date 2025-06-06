@@ -1,4 +1,5 @@
 import smtplib
+from datetime import datetime
 from flask import session
 from email.message import EmailMessage
 
@@ -11,6 +12,7 @@ class Reporter:
         self._from_address = config.get("Email", "from_address")
         self._from_name = config.get("Email", "from_name")
         self._to_address = config.get("Email", "to_address")
+        self._subject = config.get("Email", "subject")
 
     def report_results(self, results: dict):
         location_name = results["locationName"]
@@ -39,7 +41,10 @@ class Reporter:
             items_by_item_status,
         )
 
-        subject = f"FOLIO Offline Shelf Reading report"
+        timestamp = datetime.now().strftime("%Y-%m-%d-%H:%M:%S")
+        # batch_id = f"{results['servicePoint']} -- {timestamp}"
+        batch_id = f"{location_name} -- {timestamp}"
+        subject = f"{self._subject} - {batch_id}"
 
         with smtplib.SMTP(self._smtp_host) as server:
             msg = EmailMessage()
@@ -53,6 +58,8 @@ class Reporter:
             msg["To"] = self._to_address
 
             server.send_message(msg)
+
+        return batch_id
 
     def _group_by(self, items, prop, skip_text=None):
         grouped_data = {}

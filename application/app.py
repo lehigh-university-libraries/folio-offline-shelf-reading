@@ -274,8 +274,9 @@ def save_items():
 def report_results():
     results = request.json
     enrich_report_location(results)
-    reporter.report_results(results)
-    return "OK"
+    batch_id = reporter.report_results(results)
+    # return "OK"
+    return {"batch_id": batch_id}
 
 
 def enrich_report_location(results):
@@ -291,6 +292,10 @@ def enrich_report_location(results):
     item = run_with_folio_client(enrich_report_load_item)
     location_name = item["effectiveLocation"]["name"]
     results["locationName"] = location_name
+
+    # location_id = item["effectiveLocation"]["id"]
+    # service_point = location_to_service_point.get(location_id)
+    # results["servicePoint"] = service_point
 
 
 def validate_item_input(item_input):

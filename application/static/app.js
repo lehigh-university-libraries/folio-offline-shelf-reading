@@ -333,6 +333,9 @@ async function reportResults() {
     if (!response.ok) {
       throw new Error(`Response: ${response.status} ${await response.text()}`);
     }
+    const result = await response.json();
+    const batchId = result.batch_id;
+    alert("Saved Batch ID: " + batchId);
   } catch (error) {
     beepBad(error.message);
   }

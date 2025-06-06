@@ -44,6 +44,7 @@ smtp_host = <smtp server>
 from_name = Someone
 from_address = someone@email.com
 to_address = someone@email.com
+subject = FOLIO Offline Shelf Reading Report
 
 [Testing]
 
