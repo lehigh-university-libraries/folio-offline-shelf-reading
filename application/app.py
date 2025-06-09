@@ -272,8 +272,12 @@ def save_items():
                 item = modify_item(item, shelf_status, shelf_condition)
                 result = save_item(folio, item)
                 if (
-                    item_input.get("shelf_status") == "Unavailable item is on shelf"
-                    and item.get("status").get("name") == "Checked out"
+                    item_input.get("shelf_status")
+                    == "Unavailable item is on shelf"  # range mode
+                    or item_input.get("shelf_status") == "Present"  # individual mode
+                ) and (
+                    item.get("status").get("name") == "Checked out"
+                    or item.get("status").get("name") == "Missing"
                 ):
                     result = mark_item_checked_in(folio, item)
                 if item_input.get("shelf_status") == "Missing":
