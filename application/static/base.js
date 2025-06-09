@@ -1,11 +1,4 @@
 
-// If changing any of these values, check for changes in app.py as well.
-const SHELF_STATUS_PRESENT = "Present";
-const SHELF_STATUS_MISSING = "Missing";
-const SHELF_STATUS_UNAVAILABLE_BUT_ON_SHELF = "Unavailable item is on shelf";
-const SHELF_STATUS_UNAVAILABLE_AS_EXPECTED = "Unavailable as expected";
-const SHELF_STATUS_IGNORE_INVENTORIED = "Ignoring: Already inventoried";
-
 const CUSTOM_CONDITION = "<custom>";
 const BATCH_SIZE = 20;
 
