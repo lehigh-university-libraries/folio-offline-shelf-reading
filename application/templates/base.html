@@ -8,24 +8,26 @@
 
   <body>
 
-    <h1>FOLIO Offline Shelf Reading &mdash; {{ cycle }} &mdash; User {{username}} <button class="logout" onclick="logout();">Log out</button> </h1>
+    <h1>
+      FOLIO Offline Shelf Reading 
+      &mdash; 
+      {{ cycle }} 
+      &mdash;
+      Mode
+      <select id="mode_select">
+        <option value="./" {{ 'selected' if mode is eq "default" }}>Range</option>
+        <option value="./individual" {{ 'selected' if mode is eq "individual" }}>Individual</option>
+        <option value="./condition-fix" {{ 'selected' if mode is eq "condition-fix" }}>Condition Fix</option>
+      </select>
+      &mdash; 
+      User {{username}} 
+      <button class="logout" onclick="logout();">Log out</button> 
+    </h1>
 
     <div class="control_sections">
 
-      <section>
-        <h2>Identify range to shelf-read</h2>
-        <form id="load-items" onsubmit="event.preventDefault(); loadItems();">
-          <div class="start_barcode">
-            <label for="start_barcode">Start Barcode:</label>
-            <input type="text" id="start_barcode" name="start_barcode">
-          </div>
-          <div class="end_barcode">
-            <label for="end_barcode">End Barcode:</label>
-            <input type="text" id="end_barcode" name="end_barcode">
-          </div>     
-          <input type="submit" hidden></input>   
-        </form>
-      </section>
+      {% block range_section %}
+      {% endblock %}
 
       <section>
         <h2>Scan the next barcode</h2>
@@ -48,7 +50,8 @@
     <hr/>
 
     <section class="table_section">
-      <h2>Items within the range</h2>
+      {% block table_header %}
+      {% endblock %}
       <form id="items_form">
         <table id="items_table">
           <thead>
@@ -59,7 +62,9 @@
       </form>
     </section>
 
-    <script src="static/app.js"></script>
+    <script src="static/base.js"></script>
+    {% block js %}
+    {% endblock %}
     {% if test %}
       <script>
         const testData = JSON.parse('{{ test | tojson }}');

@@ -28,7 +28,7 @@ h1 {
     background-color: lightgray;
     border-bottom: 1px solid black;
 
-    button {
+    button, select {
         vertical-align: middle;
     }
 }
