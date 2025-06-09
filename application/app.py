@@ -21,6 +21,14 @@ import logging
 
 from application.reporter import Reporter
 
+SHELF_STATUS = {
+    "PRESENT": "Present",
+    "MISSING": "Missing",
+    "UNAVAILABLE_BUT_ON_SHELF": "Unavailable item is on shelf",
+    "UNAVAILABLE_AS_EXPECTED": "Unavailable as expected",
+    "IGNORE_INVENTORIED": "Ignoring: Already inventoried",
+}
+
 custom_condition_name = "<custom>"
 
 config = None
@@ -278,14 +286,15 @@ def save_items():
                 result = save_item(folio, item)
                 if (
                     item_input.get("shelf_status")
-                    == "Unavailable item is on shelf"  # range mode
-                    or item_input.get("shelf_status") == "Present"  # individual mode
+                    == SHELF_STATUS["UNAVAILABLE_BUT_ON_SHELF"]  # range mode
+                    or item_input.get("shelf_status")
+                    == SHELF_STATUS["PRESENT"]  # individual mode
                 ) and (
                     item.get("status").get("name") == "Checked out"
                     or item.get("status").get("name") == "Missing"
                 ):
                     result = mark_item_checked_in(folio, item)
-                if item_input.get("shelf_status") == "Missing":
+                if item_input.get("shelf_status") == SHELF_STATUS["MISSING"]:
                     result = mark_item_missing(folio, item)
             results.append(result)
         return results
@@ -508,6 +517,16 @@ def validate_shelf_status(shelf_status):
 
 def validate_shelf_condition(shelf_condition):
     return not shelf_condition or re.match("^[A-Za-z ]*$", shelf_condition)
+
+
+@app.route("/constants.js")
+def serve_constants():
+    js_content = ""
+    for key, value in SHELF_STATUS.items():
+        js_content += f"SHELF_STATUS_{key} = '{value}';\n"
+    response = make_response(js_content)
+    response.mimetype = "application/javascript"
+    return response
 
 
 @app.route("/healthcheck")
