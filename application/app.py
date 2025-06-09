@@ -162,6 +162,11 @@ def individual():
     return home("individual")
 
 
+@app.route("/condition-fix", methods=["GET"])
+def condition_fix():
+    return home("condition-fix")
+
+
 def home(mode):
     if "username" not in session:
         username = request.headers.get("X-Remote-User", None)
@@ -284,6 +289,42 @@ def save_items():
     return run_with_folio_client(save_items_internal)
 
 
+@app.route("/fix-items-condition", methods=["POST"])
+def fix_items_condition():
+    items_input = request.json
+
+    def fix_items_condition_internal(folio):
+        results = []
+        for item_input in items_input:
+            validation_error = validate_item_input(item_input, shelf_status=False)
+            if validation_error:
+                results.append(validation_error)
+                continue
+
+            barcode = item_input["barcode"]
+            item = load_item(folio, None, barcode)
+            if not item:
+                result = build_error(barcode, f"Unknown barcode: {barcode}")
+            else:
+                if item.get("itemDamagedStatusId", None) == item_damage_status:
+                    result = build_error(
+                        barcode,
+                        "Cannot remove condition note, item damaged status is set.",
+                    )
+                else:
+                    item["notes"] = [
+                        note
+                        for note in item["notes"]
+                        if note["itemNoteTypeId"]
+                        != inventoried_item_condition_note_type
+                    ]
+                    result = save_item(folio, item)
+            results.append(result)
+        return results
+
+    return run_with_folio_client(fix_items_condition_internal)
+
+
 @app.route("/report-results", methods=["POST"])
 def report_results():
     results = request.json
@@ -308,14 +349,14 @@ def enrich_report_location(results):
     results["locationName"] = location_name
 
 
-def validate_item_input(item_input):
+def validate_item_input(item_input, shelf_status=True):
     error = None
     barcode = item_input.get("barcode")
     if not validate_barcode(barcode):
         return build_error(barcode, f"Invalid barcode: {barcode}")
     if not validate_item_id(item_input.get("id")):
         return build_error(barcode, f'Invalid item id: {item_input.get("id")}')
-    if not validate_shelf_status(item_input.get("shelf_status")):
+    if shelf_status and not validate_shelf_status(item_input.get("shelf_status")):
         return build_error(
             barcode, f'Invalid shelf status: {item_input.get("shelf_status")}'
         )
