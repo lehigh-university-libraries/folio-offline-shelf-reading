@@ -1,13 +1,3 @@
-addEventListener("load", (event) => {
-  document.getElementById("next_barcode").disabled = false;
-  document.getElementById("next_barcode").focus();
-
-  printItemsTableHeader();
-  document.querySelector(".table_section").style.display = 'initial';
-
-  itemBarcodes = [];
-});
-
 function printItemsTableHeader() {
   document.querySelector("#items_table thead").insertAdjacentHTML("beforeend", `
     <tr>
@@ -19,7 +9,7 @@ function printItemsTableHeader() {
     `);
 }
 
-function processItemBarcode(barcode) {
+function addRowForBarcode(barcode) {
   document.querySelector("#items_table tbody").insertAdjacentHTML("beforeend", `
     <tr>
       <td class="barcode">${barcode}</td>
@@ -28,16 +18,6 @@ function processItemBarcode(barcode) {
       <td class="result"></td>
     </tr>
     `);
-  previousScannedRow = document.querySelectorAll("#items_table tbody tr").length;
-  itemBarcodes.push(barcode);
-  document.getElementById("save_to_folio").disabled = false;
-}
-
-function saveToFolio() {
-  const rows = document.querySelectorAll(
-    "#items_table tbody tr:not(.result-success)"
-  );
-  saveBatches(rows);
 }
 
 function rowsToData(rows) {
