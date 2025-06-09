@@ -53,9 +53,31 @@ In FOLIO:
 - An "Inventory" type item note records the shelf status, date/time and username of each item inventoried.
 - For items with a scanned condition barcode, a second "Inventoried Condition" type item note records the condition.
 
-![alt text](README/item-notes.png)
+![Two item notes](README/item-notes.png)
 
 Finally, an email is sent to a configured list of users, summarizing the results of shelf reading that range.
+
+## Operating Modes
+
+The application supports several operating modes. 
+
+![A drop-down labelled "Mode" with the value "Range" selected](README/mode.png)
+
+### Range
+
+The default Range mode is for scanning a section of books at a time, i.e. one or more shelves.
+
+### Individual Items
+
+Individual Items mode is for scanning (one or more) individual items that are not meant to be shelved together.  The items will be marked Present, and processed just like Present items in range mode.  
+
+This might be used for items that were discovered out-of-place earlier using Range mode and are now being re-shelved in the correct location.
+
+### Condition Fix
+
+Condition Fix will remove any condition notes present for the scanned items.  It will not affect any items with a set item_damage_status.  See the configuration file for details.
+
+This is meant for minor, fixable conditions like replacing a spine label.  This mode can be used after the condition is fixed.
 
 ## Dependencies
 

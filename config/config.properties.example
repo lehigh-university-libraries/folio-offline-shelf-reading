@@ -20,6 +20,7 @@ inventoried_item_note_type=Inventory
 # This item note is used for condition notes on inventoried items.
 inventoried_item_condition_note_type=Inventoried Condition
 
+# The item damage status is set to this value for some conditions; see [ConditionsDamageFlag] below.
 item_damage_status=Damaged
 
 [MetaDB]
@@ -33,6 +34,8 @@ items_query_url=https://raw.githubusercontent.com/lehigh-university-libraries/fo
 33333 = Spine label needs replacement
 99999 = <custom>
 
+# All conditions are marked on the item as an item note.
+Conditions set to true here will also set the item_damage_status as configured above.
 [ConditionsDamageFlag]
 11111 = True
 22222 = True

@@ -67,9 +67,12 @@ class Reporter:
             value = item.get(prop)
             if not value or (skip_text and skip_text in value):
                 continue
-            if value not in grouped_data:
-                grouped_data[value] = []
-                grouped_data[value].append(item)
+            if value in grouped_data:
+                group = grouped_data[value]
+            else:
+                group = []
+                grouped_data[value] = group
+            group.append(item)
         return grouped_data
 
     def _format_section(self, heading, results):
