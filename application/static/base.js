@@ -13,6 +13,8 @@ const BATCH_SIZE = 20;
 const BEEP_GOOD = new Audio("static/beep-313342.mp3");
 const BEEP_BAD = new Audio("static/message-notification-103496.mp3");
 
+let SAVE_PATH = 'save-items';
+
 let modeValue;
 let itemBarcodes;
 let previousScannedRow;
@@ -93,7 +95,7 @@ async function saveBatch(batch) {
   const payload = rowsToData(batch);
   setWaiting(true);
   try {
-    const response = await fetch('save-items', {
+    const response = await fetch(SAVE_PATH, {
       method: "POST",
       body: JSON.stringify(payload),
       headers: {
