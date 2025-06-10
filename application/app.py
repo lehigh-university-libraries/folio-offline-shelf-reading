@@ -29,6 +29,13 @@ SHELF_STATUS = {
     "IGNORE_INVENTORIED": "Ignoring: Already inventoried",
 }
 
+PATTERN = {
+    "BARCODE": "^[0-9]+$",
+    "ITEM_ID": "^[a-f0-9-]+$",
+    "SHELF_STATUS": "^[A-Za-z ]+$",
+    "SHELF_CONDITION": "^[A-Za-z ]+$",
+}
+
 custom_condition_name = "<custom>"
 
 config = None
@@ -504,26 +511,28 @@ def enrich_record(record):
 
 
 def validate_barcode(barcode):
-    return barcode and re.match("^[0-9]*$", barcode)
+    return barcode and re.match(PATTERN["BARCODE"], barcode)
 
 
 def validate_item_id(item_id):
-    return not item_id or re.match("^[a-f0-9-]*$", item_id)
+    return not item_id or re.match(PATTERN["ITEM_ID"], item_id)
 
 
 def validate_shelf_status(shelf_status):
-    return shelf_status and re.match("^[A-Za-z ]*$", shelf_status)
+    return shelf_status and re.match(PATTERN["SHELF_STATUS"], shelf_status)
 
 
 def validate_shelf_condition(shelf_condition):
-    return not shelf_condition or re.match("^[A-Za-z ]*$", shelf_condition)
+    return not shelf_condition or re.match(PATTERN["SHELF_CONDITION"], shelf_condition)
 
 
 @app.route("/constants.js")
 def serve_constants():
     js_content = ""
-    for key, value in SHELF_STATUS.items():
-        js_content += f"SHELF_STATUS_{key} = '{value}';\n"
+    for prefix, values in {"SHELF_STATUS": SHELF_STATUS, "PATTERN": PATTERN}.items():
+        js_content += "\n"
+        for key, value in values.items():
+            js_content += f"{prefix}_{key} = '{value}';\n"
     response = make_response(js_content)
     response.mimetype = "application/javascript"
     return response
