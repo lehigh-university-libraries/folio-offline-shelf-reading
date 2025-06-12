@@ -66,6 +66,11 @@ function scanNextBarcode() {
 }
 
 function validateBarcode(barcode, label = "barcode") {
+  // If it's empty, fail but don't show an error
+  if (!barcode.length) {
+    return false;
+  }
+
   const regex = new RegExp(VALIDATION_BARCODE);
   const result = regex.test(barcode);
   if (!result) {
