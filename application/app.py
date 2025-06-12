@@ -43,16 +43,9 @@ reporter = None
 
 
 def create_app():
-    global config
     app = Flask(__name__)
 
-    config = ConfigParser()
-    config.read_file(open("config/config.properties"))
-    dir = os.path.dirname(__file__)
-    dir = os.path.dirname(dir)
-    config_path = os.path.join(dir, "config", "config.properties")
-    with open(config_path, "r", encoding="utf-8") as f:
-        config.read_file(f)
+    init_config()
 
     app.secret_key = config["Testing"]["secret_key"]
 
@@ -76,6 +69,17 @@ def run_with_folio_client(fn):
     ) as folio:
 
         return fn(folio)
+
+
+def init_config():
+    global config
+    config = ConfigParser()
+    config.read_file(open("config/config.properties"))
+    dir = os.path.dirname(__file__)
+    dir = os.path.dirname(dir)
+    config_path = os.path.join(dir, "config", "config.properties")
+    with open(config_path, "r", encoding="utf-8") as f:
+        config.read_file(f)
 
 
 def init_conditions():
@@ -504,26 +508,35 @@ def enrich_record(record):
 
 
 def validate_barcode(barcode):
-    return barcode and re.match("^[0-9]*$", barcode)
+    return barcode and re.match(config.get("Validation", "BARCODE"), barcode)
 
 
 def validate_item_id(item_id):
-    return not item_id or re.match("^[a-f0-9-]*$", item_id)
+    return not item_id or re.match(config.get("Validation", "ITEM_ID"), item_id)
 
 
 def validate_shelf_status(shelf_status):
-    return shelf_status and re.match("^[A-Za-z ]*$", shelf_status)
+    return shelf_status and re.match(
+        config.get("Validation", "SHELF_STATUS"), shelf_status
+    )
 
 
 def validate_shelf_condition(shelf_condition):
-    return not shelf_condition or re.match("^[A-Za-z ]*$", shelf_condition)
+    return not shelf_condition or re.match(
+        config.get("Validation", "SHELF_CONDITION"), shelf_condition
+    )
 
 
 @app.route("/constants.js")
 def serve_constants():
     js_content = ""
-    for key, value in SHELF_STATUS.items():
-        js_content += f"SHELF_STATUS_{key} = '{value}';\n"
+    for prefix, values in {
+        "SHELF_STATUS": SHELF_STATUS,
+        "VALIDATION": dict(config.items("Validation")),
+    }.items():
+        js_content += "\n"
+        for key, value in values.items():
+            js_content += f"{prefix}_{key.upper()} = '{value}';\n"
     response = make_response(js_content)
     response.mimetype = "application/javascript"
     return response

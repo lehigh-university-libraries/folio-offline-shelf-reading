@@ -11,20 +11,25 @@ addEventListener("load", (event) => {
 });
 
 async function loadItems() {
-  // Ensure both range barcodes are entered before loading
-  if (!document.getElementById("start_barcode").value.length) {
+  // Ensure both range barcodes are entered and valid before loading
+  const startBarcodeField = document.getElementById("start_barcode");
+  if (!validateBarcode(startBarcodeField.value, "start barcode")) {
+    startBarcodeField.value = null;
+    startBarcodeField.focus();
     return;
   }
-  if (!document.getElementById("end_barcode").value.length) {
-    document.getElementById("end_barcode").focus();
+  const endBarcodeField = document.getElementById("end_barcode");
+  if (!validateBarcode(endBarcodeField.value, "end barcode")) {
+    endBarcodeField.value = null;
+    endBarcodeField.focus();
     return;
   }
 
   setWaiting(true);
   try {
     const params = new URLSearchParams();
-    params.append("start_barcode", document.getElementById("start_barcode").value);
-    params.append("end_barcode", document.getElementById("end_barcode").value);
+    params.append("start_barcode", startBarcodeField.value);
+    params.append("end_barcode", endBarcodeField.value);
     const response = await fetch(`load-items?${params}`);
     if (!response.ok) {
       setWaiting(false);

@@ -49,6 +49,11 @@ function isConditionBarcode(barcode) {
 
 function scanNextBarcode() {
   const barcode = document.getElementById("next_barcode").value;
+  if (!validateBarcode(barcode)) {
+    document.getElementById("next_barcode").value = null;
+    return;
+  }
+
   if (isConditionBarcode(barcode)) {
     processConditionBarcode(barcode);
   }
@@ -60,10 +65,30 @@ function scanNextBarcode() {
   document.getElementById("next_barcode").focus();
 }
 
+function validateBarcode(barcode, label = "barcode") {
+  // If it's empty, fail but don't show an error
+  if (!barcode.length) {
+    return false;
+  }
+
+  const regex = new RegExp(VALIDATION_BARCODE);
+  const result = regex.test(barcode);
+  if (!result) {
+    beepBad("Invalid " + label + ": " + barcode);
+  }
+  return result;
+}
+
 function processConditionBarcode(conditionBarcode) {
   let condition = conditionsMap.get(conditionBarcode);
   if (condition == CUSTOM_CONDITION) {
     condition = prompt("Please enter notes on the item's condition.");
+    const regex = new RegExp(VALIDATION_SHELF_CONDITION);
+    const result = regex.test(condition);
+    if (!result) {
+      beepBad("Cannot use that custom condition.  It includes some unsupported characters.");
+      return;
+    }
   }
   setCondition(previousScannedRow, condition);
 }
