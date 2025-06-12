@@ -49,6 +49,7 @@ from_address = someone@email.com
 to_address = someone@email.com
 
 [Validation]
+# Note that the barcode pattern should account for both item and condition barcodes.
 BARCODE: ^[0-9]+$
 ITEM_ID: ^[a-f0-9-]+$
 SHELF_STATUS: ^[A-Za-z ]+$
