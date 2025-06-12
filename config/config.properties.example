@@ -48,6 +48,12 @@ from_name = Someone
 from_address = someone@email.com
 to_address = someone@email.com
 
+[Validation]
+BARCODE: ^[0-9]+$
+ITEM_ID: ^[a-f0-9-]+$
+SHELF_STATUS: ^[A-Za-z ]+$
+SHELF_CONDITION: ^[A-Za-z ]+$
+
 [Testing]
 
 enabled = False

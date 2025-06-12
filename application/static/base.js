@@ -66,7 +66,7 @@ function scanNextBarcode() {
 }
 
 function validateBarcode(barcode, label = "barcode") {
-  const regex = new RegExp(PATTERN_BARCODE);
+  const regex = new RegExp(VALIDATION_BARCODE);
   const result = regex.test(barcode);
   if (!result) {
     beepBad("Invalid " + label + ": " + barcode);
@@ -78,7 +78,7 @@ function processConditionBarcode(conditionBarcode) {
   let condition = conditionsMap.get(conditionBarcode);
   if (condition == CUSTOM_CONDITION) {
     condition = prompt("Please enter notes on the item's condition.");
-    const regex = new RegExp(PATTERN_SHELF_CONDITION);
+    const regex = new RegExp(VALIDATION_SHELF_CONDITION);
     const result = regex.test(condition);
     if (!result) {
       beepBad("Cannot use that custom condition.  It includes some unsupported characters.");
