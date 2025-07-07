@@ -174,13 +174,22 @@ function setExpectedRow(row) {
 }
 
 function saveToFolio() {
-  processSkippedRows();
+  try {
+    document.getElementById("save_to_folio").disabled = true;
+    setWaiting(true);
 
-  const rows = document.querySelectorAll(
-    "#items_table tbody tr.marked:not(.already-inventoried):not(.result-success):not(.ignore)"
-  );
-  saveBatches(rows);
-  reportResults();
+    processSkippedRows();
+
+    const rows = document.querySelectorAll(
+      "#items_table tbody tr.marked:not(.already-inventoried):not(.result-success):not(.ignore)"
+    );
+    saveBatches(rows);
+    reportResults();
+  }
+  finally {
+    setWaiting(false);
+    document.getElementById("save_to_folio").disabled = false;
+  }
 }
 
 function processSkippedRows() {
