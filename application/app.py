@@ -204,7 +204,7 @@ def login():
         if not request.form["password"] == config["Testing"]["password"]:
             return "Nope", 401
         session["username"] = request.form["username"]
-        return redirect(url_for("home"))
+        return redirect(url_for("default"))
     return """
       <form method="post">
           <p><input type=text name=username>
@@ -218,13 +218,13 @@ def login():
 def logout():
     session.clear()
     response = make_response("Logged out", 401)
-    response.delete_cookie("ldapAuth_session_token", path=url_for("home")[:-1])
+    response.delete_cookie("ldapAuth_session_token", path=url_for("default")[:-1])
     return response
 
 
 @app.route("/done/logout", methods=["GET"])
 def done_logout():
-    return render_template("logged_out.html", home=url_for("home"))
+    return render_template("logged_out.html", home=url_for("default"))
 
 
 @app.route("/load-conditions", methods=["GET"])
