@@ -1,4 +1,4 @@
-FROM python:3.13-bookworm@sha256:b7ce60fbc565933c5ae088df8dbe63ffad16a634d4c575ec989e2f106f7df674
+FROM python:3.14-bookworm@sha256:776ab36198fa76233d7b91abb01ab694332695ba214de14b62e4e558fd530464
 
 WORKDIR /app
 
