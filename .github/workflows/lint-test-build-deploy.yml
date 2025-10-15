@@ -19,7 +19,7 @@ jobs:
   lint:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
 
       - run: shellcheck docker-entrypoint.sh
 
@@ -33,58 +33,12 @@ jobs:
 
   build-push:
     needs: [lint]
-    runs-on: ubuntu-24.04
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+    uses: lehigh-university-libraries/gha/.github/workflows/build-push-ghcr.yaml@main
+    permissions:
+      contents: read
+      packages: write
+    secrets: inherit
 
-      - name: Extract branch or tag name as docker tag
-        shell: bash
-        run: |-
-          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
-            TAG=$(echo "${GITHUB_REF#refs/tags/}" | sed 's/[^a-zA-Z0-9._-]//g' | awk '{print substr($0, length($0)-120)}')
-          else
-            TAG=$(echo "${GITHUB_REF#refs/heads/}" | sed 's/[^a-zA-Z0-9._-]//g' | awk '{print substr($0, length($0)-120)}')
-          fi
-
-          echo "tag=$TAG" >> $GITHUB_OUTPUT
-        id: extract_tag
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@29109295f81e9208d7d86ff1c6c12d2833863392 # v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@b5ca514318bd6ebac0fb2aedd5d36ec1b5c232a2 # v3
-
-      - id: setup
-        name: Setup docker build
-        shell: bash
-        run: |-
-          # only cache main tag to GHCR
-          if [ "${{steps.extract_tag.outputs.tag}}" = "main" ]; then
-            echo "cache-to=type=registry,ref=ghcr.io/lehigh-university-libraries/folio-offline-shelf-reading:cache,mode=max" >> $GITHUB_OUTPUT
-          else
-            echo "cache-to=" >> $GITHUB_OUTPUT
-          fi
-
-      - name: ghcr Login
-        uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build and push dockerhub
-        uses: docker/build-push-action@14487ce63c7a62a4a324b0bfb37086795e31c6c1 # v6
-        with:
-          platforms: |
-            linux/amd64
-            linux/arm64
-          push: true
-          cache-from: type=registry,ref=ghcr.io/lehigh-university-libraries/folio-offline-shelf-reading:cache
-          cache-to: ${{ steps.setup.outputs.cache-to }}
-          tags: |
-            ghcr.io/lehigh-university-libraries/folio-offline-shelf-reading:${{steps.extract_tag.outputs.tag}}
   deploy:
     needs: [build-push]
     uses: lehigh-university-libraries/gha/.github/workflows/linderman-deploy.yaml@main
