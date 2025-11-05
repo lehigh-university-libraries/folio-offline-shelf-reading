@@ -1,29 +1,7 @@
-FROM python:3.14-bookworm@sha256:776ab36198fa76233d7b91abb01ab694332695ba214de14b62e4e558fd530464
-
-WORKDIR /app
-
-# renovate: datasource=repology depName=debian_12/gosu
-ARG GOSU_VERSION="1.14-1+b10"
-RUN apt-get update \
-  && apt-get install -y --no-install-recommends \
-    gosu="${GOSU_VERSION}" \
-  && rm -rf /var/lib/apt/lists/* \
-  && groupadd -r nobody \
-  && useradd -r -g nobody pyapp \
-  && chown pyapp /app
+FROM ghcr.io/lehigh-university-libraries/python3.13:main@sha256:8020c98755e52591b45663ae68d5862e76c892eb4ec91316941bb23c54f3c229
 
 COPY requirements.txt /app
-RUN pip install --no-cache-dir -r /app/requirements.txt
-
-ENV FLASK_APP=ShelfReading \
-    MODEL_PATH=/app/models \
-    ADDRESS=0.0.0.0 \
-    PORT=8080 \
-    WORKERS=4 \
-    SCRIPT_NAME=/
+RUN uv pip install --system --no-cache-dir -r /app/requirements.txt
 
 COPY . /app
 
-ENTRYPOINT ["/app/docker-entrypoint.sh"]
-
-HEALTHCHECK CMD curl -f http://localhost:${PORT}${SCRIPT_NAME}healthcheck
