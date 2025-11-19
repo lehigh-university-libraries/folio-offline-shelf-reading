@@ -31,6 +31,7 @@ SHELF_STATUS = {
 
 custom_condition_name = "<custom>"
 
+logger = None
 config = None
 inventoried_statistical_code = None
 inventoried_item_note_type = None
@@ -46,6 +47,7 @@ def create_app():
     app = Flask(__name__)
 
     init_config()
+    init_logging()
 
     app.secret_key = config["Testing"]["secret_key"]
 
@@ -80,6 +82,24 @@ def init_config():
     config_path = os.path.join(dir, "config", "config.properties")
     with open(config_path, "r", encoding="utf-8") as f:
         config.read_file(f)
+
+
+def init_logging():
+    logging.basicConfig(format="%(asctime)s %(levelname)s: %(message)s")
+    global logger
+    logger = logging.getLogger(__name__)
+    logger.setLevel(config["Logging"]["level"].upper())
+
+    # Remove /healthcheck from application server logs
+    class HealthCheckFilter(logging.Filter):
+        def __init__(self):
+            super().__init__()
+            self.healthcheck_path = os.environ.get("SCRIPT_NAME", "/") + "healthcheck"
+
+        def filter(self, record: logging.LogRecord) -> bool:
+            return record.getMessage().find(self.healthcheck_path) == -1
+
+    logging.getLogger("gunicorn.access").addFilter(HealthCheckFilter())
 
 
 def init_conditions():
@@ -242,6 +262,8 @@ def load_items():
     if not validate_barcode(end_barcode):
         return f"Invalid end barcode: {end_barcode}", 400
 
+    logger.info(f"Loading items in barcode range '{start_barcode}' to '{end_barcode}'")
+
     def load_items_internal(folio):
         result = folio.folio_post(
             path="/ldp/db/reports",
@@ -265,6 +287,7 @@ def load_items():
 @app.route("/save-items", methods=["POST"])
 def save_items():
     items_input = request.json
+    logger.info(f"Saving items with input: {items_input}")
 
     def save_items_internal(folio):
         results = []
@@ -309,6 +332,7 @@ def save_items():
 @app.route("/fix-items-condition", methods=["POST"])
 def fix_items_condition():
     items_input = request.json
+    logger.info(f"Fix items condition with input: {items_input}")
 
     def fix_items_condition_internal(folio):
         results = []
@@ -345,6 +369,8 @@ def fix_items_condition():
 @app.route("/report-results", methods=["POST"])
 def report_results():
     results = request.json
+    logger.info(f"Report results with input: {results}")
+
     enrich_report_location(results)
     reporter.report_results(results)
     return "OK"
@@ -545,18 +571,3 @@ def serve_constants():
 @app.route("/healthcheck")
 def healthcheck():
     return "OK"
-
-
-class HealthCheckFilter(logging.Filter):
-    def __init__(self):
-        super().__init__()
-        self.healthcheck_path = os.environ.get("SCRIPT_NAME", "/") + "healthcheck"
-
-    def filter(self, record: logging.LogRecord) -> bool:
-        return record.getMessage().find(self.healthcheck_path) == -1
-
-
-# Remove /healthcheck from application server logs
-logging.getLogger("gunicorn.access").addFilter(HealthCheckFilter())
-
-logger = logging.getLogger(__name__)

@@ -55,6 +55,9 @@ ITEM_ID: ^[a-f0-9-]+$
 SHELF_STATUS: ^[A-Za-z ]+$
 SHELF_CONDITION: ^[A-Za-z ]+$
 
+[Logging]
+level = INFO
+
 [Testing]
 
 enabled = False
