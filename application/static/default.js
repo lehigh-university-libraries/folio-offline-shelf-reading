@@ -229,17 +229,24 @@ async function reportResults() {
     unknownBarcodes: unknownBarcodes,
   };
   try {
+    const signal = AbortSignal.timeout(10000);
     const response = await fetch('report-results', {
       method: "POST",
       body: JSON.stringify(payload),
       headers: {
         'Content-Type': 'application/json',
       },
+      signal: signal,
     });
     if (!response.ok) {
       throw new Error(`Response: ${response.status} ${await response.text()}`);
     }
   } catch (error) {
-    beepBad(error.message);
+    if (error.name === 'TimeoutError') {
+      beepBad('Reporting results timed out.');
+    }
+    else {
+      beepBad("Error reporting results: " + error.message);
+    }
   }
 }
