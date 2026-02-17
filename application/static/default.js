@@ -173,7 +173,7 @@ function setExpectedRow(row) {
   }
 }
 
-function saveToFolio() {
+async function saveToFolio() {
   try {
     document.getElementById("save_to_folio").disabled = true;
     setWaiting(true);
@@ -183,10 +183,11 @@ function saveToFolio() {
     const rows = document.querySelectorAll(
       "#items_table tbody tr.marked:not(.already-inventoried):not(.result-success):not(.ignore)"
     );
-    saveBatches(rows);
-    reportResults();
-  }
-  finally {
+    await saveBatches(rows);
+    await reportResults();
+  } catch (error) {
+    beepBad("Could not save or send report. " + error.message);
+  } finally {
     setWaiting(false);
     document.getElementById("save_to_folio").disabled = false;
   }

@@ -98,12 +98,12 @@ function setCondition(row, value) {
   td.textContent = value.trim();
 }
 
-function saveBatches(rows) {
+async function saveBatches(rows) {
   let start = 0;
   while (start < rows.length) {
     const batch = Array.from(rows).slice(start, start + BATCH_SIZE);
     if (batch.length > 0) {
-      saveBatch(batch);
+      await saveBatch(batch);           // <-- wait for each batch (or use Promise.all for concurrency)
     }
     start += BATCH_SIZE;
   }
