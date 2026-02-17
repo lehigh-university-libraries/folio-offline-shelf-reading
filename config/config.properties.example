@@ -47,6 +47,7 @@ smtp_host = <smtp server>
 from_name = Someone
 from_address = someone@email.com
 to_address = someone@email.com
+subject = [TEST Server] FOLIO Local Shelf Reading report
 
 [Validation]
 # Note that the barcode pattern should account for both item and condition barcodes.

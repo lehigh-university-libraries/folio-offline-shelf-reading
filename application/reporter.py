@@ -11,6 +11,7 @@ class Reporter:
         self._from_address = config.get("Email", "from_address")
         self._from_name = config.get("Email", "from_name")
         self._to_address = config.get("Email", "to_address")
+        self._subject = config.get("Email", "subject")
 
     def report_results(self, results: dict):
         location_name = results["locationName"]
@@ -39,12 +40,10 @@ class Reporter:
             items_by_item_status,
         )
 
-        subject = f"FOLIO Offline Shelf Reading report"
-
         with smtplib.SMTP(self._smtp_host) as server:
             msg = EmailMessage()
             msg.set_content(message_body)
-            msg["Subject"] = subject
+            msg["Subject"] = self._subject
             msg["From"] = (
                 f"{self._from_name} <{self._from_address}>"
                 if self._from_name
