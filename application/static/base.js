@@ -103,7 +103,7 @@ async function saveBatches(rows) {
   while (start < rows.length) {
     const batch = Array.from(rows).slice(start, start + BATCH_SIZE);
     if (batch.length > 0) {
-      await saveBatch(batch);           // <-- wait for each batch (or use Promise.all for concurrency)
+      await saveBatch(batch);
     }
     start += BATCH_SIZE;
   }
