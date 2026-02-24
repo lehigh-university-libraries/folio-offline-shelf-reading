@@ -29,6 +29,18 @@ SHELF_STATUS = {
     "IGNORE_INVENTORIED": "Ignoring: Already inventoried",
 }
 
+# item statuses that should trigger a check-in
+CHECK_IN_STATUSES = {
+    "Checked out",
+    "Missing",
+    "In process",
+    "Aged to lost",
+    "Claimed returned",
+    "Declared lost",
+    "In transit",
+    "Long missing",
+}
+
 custom_condition_name = "<custom>"
 
 logger = None
@@ -316,10 +328,7 @@ def save_items():
                     == SHELF_STATUS["UNAVAILABLE_BUT_ON_SHELF"]  # range mode
                     or item_input.get("shelf_status")
                     == SHELF_STATUS["PRESENT"]  # individual mode
-                ) and (
-                    item.get("status").get("name") == "Checked out"
-                    or item.get("status").get("name") == "Missing"
-                ):
+                ) and item.get("status").get("name") in CHECK_IN_STATUSES:
                     result = mark_item_checked_in(folio, item)
                 if item_input.get("shelf_status") == SHELF_STATUS["MISSING"]:
                     result = mark_item_missing(folio, item)
