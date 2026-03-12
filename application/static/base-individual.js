@@ -15,9 +15,9 @@ function processItemBarcode(barcode) {
     document.getElementById("save_to_folio").disabled = false;
 }
 
-function saveToFolio() {
+async function saveToFolio() {
     const rows = document.querySelectorAll(
         "#items_table tbody tr:not(.result-success)"
     );
-    saveBatches(rows);
+    await saveBatches(rows);
 }
