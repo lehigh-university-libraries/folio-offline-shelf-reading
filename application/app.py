@@ -122,7 +122,7 @@ def init_statistical_codes(folio):
     result = folio.folio_get(
         path="/statistical-codes",
         key="statisticalCodes",
-        query_params="limit=1000",
+        query_params={"limit": 1000},
     )
     statistical_codes = {
         statistical_code["code"]: statistical_code for statistical_code in result
@@ -173,7 +173,7 @@ def init_locations(folio):
     result = folio.folio_get(
         path="/locations",
         key="locations",
-        query_params="limit=1000",
+        query_params={"limit": 1000},
     )
     global location_to_service_point
     location_to_service_point = {
