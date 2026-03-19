@@ -134,7 +134,9 @@ def init_statistical_codes(folio):
     result = folio.folio_get(
         path="/statistical-codes",
         key="statisticalCodes",
-        query_params="limit=1000",
+        query_params={
+            "limit": 1000,
+        },
     )
     statistical_codes = {
         statistical_code["code"]: statistical_code for statistical_code in result
@@ -170,7 +172,9 @@ def init_item_damaged_statuses(folio):
     result = folio.folio_get(
         path="/item-damaged-statuses",
         key="itemDamageStatuses",
-        query_params="limit=1000",
+        query_params={
+            "limit": 1000,
+        },
     )
     item_damage_statuses = {
         item_damage_status["name"]: item_damage_status for item_damage_status in result
