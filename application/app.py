@@ -497,7 +497,7 @@ def mark_item_missing(folio, item):
     try:
         folio.folio_post(
             path=f"/inventory/items/{item['id']}/mark-missing",
-            payload=None,
+            payload={},
         )
         return {
             "barcode": item.get("barcode"),
