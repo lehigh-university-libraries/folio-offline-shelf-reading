@@ -217,3 +217,18 @@ def test_save_items_item_id_is_passed_to_load_item(client):
         )
 
     mock_load.assert_called_once_with(ANY, _ITEM_UUID, "12345")
+
+
+# ---------------------------------------------------------------------------
+# load_conditions route tests
+# ---------------------------------------------------------------------------
+
+
+def test_load_conditions_returns_conditions(client):
+    response = client.get("/load-conditions")
+
+    assert response.status_code == 200
+    data = response.get_json()
+    assert ["11111", "Worn"] in data
+    assert ["22222", "Spine damage"] in data
+    assert ["99999", "<custom>"] in data
