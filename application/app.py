@@ -309,7 +309,7 @@ def save_items():
                 results.append(validation_error)
                 continue
 
-            item_id = item_input["id"] if id in item_input else None
+            item_id = item_input["id"] if "id" in item_input else None
             barcode = item_input["barcode"]
             shelf_status = item_input["shelf_status"]
             shelf_condition = (
