@@ -189,7 +189,7 @@ def init_locations(folio):
     result = folio.folio_get(
         path="/locations",
         key="locations",
-        query_params="limit=1000",
+        query_params={"limit": 1000},
     )
     global location_to_service_point
     location_to_service_point = {
@@ -497,7 +497,7 @@ def mark_item_missing(folio, item):
     try:
         folio.folio_post(
             path=f"/inventory/items/{item['id']}/mark-missing",
-            payload=None,
+            payload={},
         )
         return {
             "barcode": item.get("barcode"),
