@@ -40,7 +40,7 @@ WITH
 		LEFT JOIN folio_inventory.item item_raw
 			ON item.id = item_raw.id
 	)
-SELECT 
+SELECT DISTINCT
 	item.barcode, 
 	item.id,
 	item.effective_shelving_order, 
