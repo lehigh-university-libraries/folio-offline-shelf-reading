@@ -25,13 +25,13 @@ jobs:
         with:
           verbose: true
 
-      - uses: psf/black@stable
+      - uses: psf/black@35ea67920b7f6ac8e09be1c47278752b1e827f76 # stable
         with:
           options: "--check --verbose"
 
   build-push:
     needs: [lint]
-    uses: lehigh-university-libraries/gha/.github/workflows/build-push-ghcr.yaml@main
+    uses: lehigh-university-libraries/gha/.github/workflows/build-push-ghcr.yaml@c8210d733114d47b7cbb55cefe87466f60b811a5 # main
     permissions:
       contents: read
       packages: write
@@ -39,7 +39,7 @@ jobs:
 
   deploy:
     needs: [build-push]
-    uses: lehigh-university-libraries/gha/.github/workflows/linderman-deploy.yaml@main
+    uses: lehigh-university-libraries/gha/.github/workflows/linderman-deploy.yaml@c8210d733114d47b7cbb55cefe87466f60b811a5 # main
     with:
       url: https://apps-test.lib.lehigh.edu/_rollout
     secrets: inherit
