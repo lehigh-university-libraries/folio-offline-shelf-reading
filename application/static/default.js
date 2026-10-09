@@ -119,7 +119,9 @@ function processItemBarcode(barcode) {
 
   const tr = document.querySelector(`#items_table tbody tr:nth-child(${scannedRow})`)
   const itemStatus = tr.querySelector(`td.item_status`).textContent;
-  tr.scrollIntoView();
+  // Scroll so the row before the scanned row is at the top, showing two rows
+  // above the next expected row
+  (tr.previousElementSibling ?? tr).scrollIntoView();
 
   // Process scanned item
   processScannedRow(scannedRow, itemStatus);
