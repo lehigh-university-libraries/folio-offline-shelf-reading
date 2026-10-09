@@ -64,6 +64,9 @@ hr {
 section.table_section {
     display: none;
     overflow: auto;
+    /* Keep scrolled-to rows below the sticky table header (at most two lines of
+       text, plus cell padding and borders) */
+    scroll-padding-top: calc(2lh + 12px);
 
     &.ready {
         display: initial;
