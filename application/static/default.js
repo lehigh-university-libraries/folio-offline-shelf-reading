@@ -114,8 +114,10 @@ function processItemBarcode(barcode) {
   if (scannedRow < 1) {
     beepBad("Barcode not found in this range.\n\nPlease move the item to the cart.");
     unknownBarcodes.push(barcode)
+    previousScanUnknown = true;
     return;
   }
+  previousScanUnknown = false;
 
   const tr = document.querySelector(`#items_table tbody tr:nth-child(${scannedRow})`)
   const itemStatus = tr.querySelector(`td.item_status`).textContent;
