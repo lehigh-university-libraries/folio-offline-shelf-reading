@@ -324,6 +324,7 @@ def save_items():
             item = load_item(folio, item_id, barcode)
             if not item:
                 result = build_error(barcode, f"Unknown barcode: {barcode}")
+                result["unknown_barcode"] = True
             else:
                 item = modify_item(item, shelf_status, shelf_condition)
                 result = save_item(folio, item)

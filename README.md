@@ -73,6 +73,8 @@ Individual Items mode is for scanning (one or more) individual items that are no
 
 This might be used for items that were discovered out-of-place earlier using Range mode and are now being re-shelved in the correct location.
 
+Because no network traffic occurs while scanning, barcodes are only checked against FOLIO when saving.  If any scanned barcode is valid but not found in FOLIO, a "Review scan list" popup appears after saving, and the affected rows show "Unknown barcode" in the Result column.
+
 ### Condition Fix
 
 Condition Fix will remove any condition notes present for the scanned items.  It will not affect any items with a set item_damage_status.  See the configuration file for details.
