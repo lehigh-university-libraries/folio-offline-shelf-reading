@@ -178,7 +178,9 @@ async function saveToFolio() {
     document.getElementById("save_to_folio").disabled = true;
     setWaiting(true);
 
-    processSkippedRows();
+    if (!processSkippedRows()) {
+      return;
+    }
 
     const rows = document.querySelectorAll(
       "#items_table tbody tr.marked:not(.already-inventoried):not(.result-success):not(.ignore)"
@@ -193,19 +195,33 @@ async function saveToFolio() {
   }
 }
 
+// Returns false if the user declined to mark a large number of items missing.
 function processSkippedRows() {
+  const missingRows = [];
+  const unavailableRows = [];
   for (let row = firstScannedRow; row <= lastScannedRow; row++) {
     const tr = document.querySelector(`#items_table tbody tr:nth-child(${row}):not(.marked):not(.already-inventoried):not(.result-success)`);
     if (tr) {
       const itemStatus = tr.querySelector("td.item_status").textContent;
       if (!itemStatus.length) {
-        setShelfStatus(row, SHELF_STATUS_MISSING);
+        missingRows.push(row);
       }
       else {
-        setShelfStatus(row, SHELF_STATUS_UNAVAILABLE_AS_EXPECTED);
+        unavailableRows.push(row);
       }
     }
   }
+
+  if (missingRows.length > Number(RANGE_MODE_MISSING_MAX_BEFORE_WARNING)) {
+    const ok = confirm(`${missingRows.length} items were not scanned and will be marked Missing in FOLIO.  Are you sure?`);
+    if (!ok) {
+      return false;
+    }
+  }
+
+  missingRows.forEach((row) => setShelfStatus(row, SHELF_STATUS_MISSING));
+  unavailableRows.forEach((row) => setShelfStatus(row, SHELF_STATUS_UNAVAILABLE_AS_EXPECTED));
+  return true;
 }
 
 function rowsToData(rows) {
