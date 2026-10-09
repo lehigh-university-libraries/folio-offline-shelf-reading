@@ -11,6 +11,7 @@ let SAVE_PATH = 'save-items';
 let modeValue;
 let itemBarcodes;
 let previousScannedRow;
+let previousScanUnknown = false;
 let conditionsMap;
 
 addEventListener("load", (event) => {
@@ -80,6 +81,16 @@ function validateBarcode(barcode, label = "barcode") {
 }
 
 function processConditionBarcode(conditionBarcode) {
+  // Conditions apply to the previously scanned item, so there must be a known one
+  if (previousScanUnknown) {
+    beepBad("Cannot record a condition for an item not found in this range.\n\nPlease move the item to the cart.");
+    return;
+  }
+  if (!previousScannedRow) {
+    beepBad("Please scan an item before scanning its condition.");
+    return;
+  }
+
   let condition = conditionsMap.get(conditionBarcode);
   if (condition == CUSTOM_CONDITION) {
     condition = prompt("Please enter notes on the item's condition.");
