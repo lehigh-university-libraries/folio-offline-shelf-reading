@@ -165,13 +165,17 @@ async function logout() {
     }
     location.href = "done/logout";
   } catch (error) {
-    beep(error.message);
+    beepBad(error.message);
   }
 }
 
 function beepBad(text) {
-  BEEP_BAD.play();
-  alert(text);
+  // play() is async and alert() blocks the page, so wait for playback to
+  // start before showing the popup.  Otherwise the sound plays after it closes.
+  BEEP_BAD.currentTime = 0;
+  BEEP_BAD.play()
+    .catch(() => {})
+    .finally(() => alert(text));
 }
 
 function beepGood() {
