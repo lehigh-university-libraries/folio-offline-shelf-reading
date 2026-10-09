@@ -19,5 +19,10 @@ async function saveToFolio() {
     const rows = document.querySelectorAll(
         "#items_table tbody tr:not(.result-success)"
     );
-    await saveBatches(rows);
+    const results = await saveBatches(rows);
+
+    const unknownCount = results.filter((result) => result.unknown_barcode).length;
+    if (unknownCount > 0) {
+        beepBad(`Review scan list: ${unknownCount} scanned barcode(s) not found in FOLIO.`);
+    }
 }

@@ -99,14 +99,16 @@ function setCondition(row, value) {
 }
 
 async function saveBatches(rows) {
+  const allResults = [];
   let start = 0;
   while (start < rows.length) {
     const batch = Array.from(rows).slice(start, start + BATCH_SIZE);
     if (batch.length > 0) {
-      await saveBatch(batch);
+      allResults.push(...await saveBatch(batch));
     }
     start += BATCH_SIZE;
   }
+  return allResults;
 }
 
 async function saveBatch(batch) {
@@ -125,8 +127,10 @@ async function saveBatch(batch) {
     }
     const results = await response.json();
     printResults(results);
+    return results;
   } catch (error) {
     beepBad(error.message);
+    return [];
   } finally {
     setWaiting(false);
   }
