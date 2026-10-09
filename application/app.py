@@ -572,6 +572,7 @@ def serve_constants():
     for prefix, values in {
         "SHELF_STATUS": SHELF_STATUS,
         "VALIDATION": dict(config.items("Validation")),
+        "RANGE_MODE": dict(config.items("RangeMode")),
     }.items():
         js_content += "\n"
         for key, value in values.items():

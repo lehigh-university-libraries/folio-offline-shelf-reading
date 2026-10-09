@@ -56,6 +56,10 @@ ITEM_ID: ^[a-f0-9-]+$
 SHELF_STATUS: ^[A-Za-z ]+$
 SHELF_CONDITION: ^[A-Za-z ]+$
 
+[RangeMode]
+# When saving, ask the user to confirm if more than this many items would be marked Missing.
+missing_max_before_warning = 10
+
 [Logging]
 level = INFO
 
