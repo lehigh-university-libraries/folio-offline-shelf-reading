@@ -201,17 +201,17 @@ app = create_app()
 
 
 @app.route("/", methods=["GET"])
-def default():
-    return home("default")
+def range_mode():
+    return home("range")
 
 
 @app.route("/individual", methods=["GET"])
-def individual():
+def individual_mode():
     return home("individual")
 
 
 @app.route("/condition-fix", methods=["GET"])
-def condition_fix():
+def condition_fix_mode():
     return home("condition-fix")
 
 
@@ -240,7 +240,7 @@ def login():
         if not request.form["password"] == config["Testing"]["password"]:
             return "Nope", 401
         session["username"] = request.form["username"]
-        return redirect(url_for("default"))
+        return redirect(url_for("range_mode"))
     return """
       <form method="post">
           <p><input type=text name=username>
@@ -254,13 +254,13 @@ def login():
 def logout():
     session.clear()
     response = make_response("Logged out", 401)
-    response.delete_cookie("ldapAuth_session_token", path=url_for("default")[:-1])
+    response.delete_cookie("ldapAuth_session_token", path=url_for("range_mode")[:-1])
     return response
 
 
 @app.route("/done/logout", methods=["GET"])
 def done_logout():
-    return render_template("logged_out.html", home=url_for("default"))
+    return render_template("logged_out.html", home=url_for("range_mode"))
 
 
 @app.route("/load-conditions", methods=["GET"])
